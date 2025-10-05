@@ -165,7 +165,7 @@ Search and replace Italian text throughout the HTML files:
 
 - Update `index.html` header and title
 - Change references to "Italian" in all files
-- Update `README.md` and `CLAUDE.md`
+- Update `README.md` 
 
 ## 🎨 Customization
 
