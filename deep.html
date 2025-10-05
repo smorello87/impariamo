@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italian Language Learning Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+        
+        :root {
+            --primary: #E63946;
+            --secondary: #457B9D;
+            --accent: #A8DADC;
+            --light: #F1FAEE;
+            --dark: #1D3557;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .card-flip {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .audio-wave {
+            animation: audioWave 1.5s infinite ease-in-out;
+        }
+        
+        @keyframes audioWave {
+            0%, 100% { height: 20px; }
+            50% { height: 10px; }
+        }
+        
+        .audio-wave:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .audio-wave:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        .audio-wave:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+        
+        .audio-wave:nth-child(5) {
+            animation-delay: 0.8s;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .verb-conjugation-table td {
+            transition: background-color 0.3s;
+        }
+        
+        .verb-conjugation-table td.correct {
+            background-color: #d1fae5;
+        }
+        
+        .verb-conjugation-table td.incorrect {
+            background-color: #fee2e2;
+        }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QJL9EQGT3Y');
+    </script>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navigation back to main site -->
+        <div class="mb-4">
+            <a href="index.html" class="inline-flex items-center text-[#457B9D] hover:text-[#1D3557] font-medium">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Impariamo l'Italiano!
+            </a>
+        </div>
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <h1 class="title-font text-4xl md:text-5xl font-bold text-[#1D3557] mb-2">Italian Language Learning Suite</h1>
+            <p class="text-lg text-gray-600">Interactive tools for mastering Italian in the classroom</p>
+            <div class="mt-4">
+                <img src="https://flagcdn.com/w80/it.png" alt="Italian Flag" class="mx-auto h-12 shadow-md rounded">
+            </div>
+        </header>
+        
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center mb-8">
+            <div class="tabs tabs-boxed bg-white shadow-md rounded-full">
+                <button class="tab tab-lg tab-active" data-tab="flashcards">Flashcards</button> 
+                <button class="tab tab-lg" data-tab="verbs">Verb Conjugation</button> 
+                <button class="tab tab-lg" data-tab="listening">Listening</button>
+                <button class="tab tab-lg" data-tab="vocabulary">Vocabulary Builder</button>
+                <button class="tab tab-lg" data-tab="grammar">Grammar Check</button>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 rounded-full h-4 mb-8">
+            <div id="progress-bar" class="progress-bar bg-[#457B9D] h-4 rounded-full" style="width: 25%"></div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <!-- Flashcards Tab -->
+            <div id="flashcards" class="tab-content active">
+                <h2 class="text-2xl font-bold mb-6 text-[#1D3557] flex items-center">
+                    <i class="fas fa-layer-group mr-3 text-[#E63946]"></i> Vocabulary Flashcards
+                </h2>
+                
+                <div class="flex flex-col items-center">
+                    <div class="relative w-full max-w-md h-64 mb-8 cursor-pointer" id="flashcard-container">
+                        <div class="card-flip w-full h-full bg-white rounded-xl shadow-md overflow-hidden">
+                            <div class="card-front flex flex-col justify-center items-center p-6 bg-[#F1FAEE]">
+                                <span class="text-sm text-gray-500 mb-2">Italian</span>
+                                <h3 class="text-3xl font-bold text-center text-[#1D3557]" id="flashcard-word">Ciao</h3>
+                                <div class="mt-4 text-gray-500">
+                                    <i class="fas fa-redo"></i> Click to flip
+                                </div>
+                            </div>
+                            <div class="card-back flex flex-col justify-center items-center p-6 bg-[#A8DADC]">
+                                <span class="text-sm text-gray-700 mb-2">English</span>
+                                <h3 class="text-3xl font-bold text-center text-[#1D3557]" id="flashcard-translation">Hello</h3>
+                                <div class="mt-4 text-gray-700">
+                                    <i class="fas fa-redo"></i> Click to flip
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4 mb-6">
+                        <button id="prev-card" class="btn btn-outline bg-gray-100 border-gray-300 text-gray-700">
+                            <i class="fas fa-arrow-left mr-2"></i> Previous
+                        </button>
+                        <button id="next-card" class="btn bg-[#457B9D] text-white hover:bg-[#1D3557]">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="w-full max-w-md">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium">Current Progress</span>
+                            <span class="text-sm font-medium" id="card-counter">1/20</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-[#E63946] h-2.5 rounded-full" id="card-progress" style="width: 5%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold mb-3">Flashcard Categories</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="category-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-category="basics">Basics</button>
+                        <button class="category-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-category="food">Food</button>
+                        <button class="category-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-category="travel">Travel</button>
+                        <button class="category-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-category="verbs">Common Verbs</button>
+                        <button class="category-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-category="adjectives">Adjectives</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Verb Conjugation Tab -->
+            <div id="verbs" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 text-[#1D3557] flex items-center">
+                    <i class="fas fa-language mr-3 text-[#E63946]"></i> Verb Conjugation Practice
+                </h2>
+                
+                <div class="mb-8">
+                    <label class="block text-gray-700 mb-2">Select a verb:</label>
+                    <select id="verb-select" class="select select-bordered w-full max-w-xs bg-white border-[#A8DADC] focus:border-[#457B9D]">
+                        <option value="parlare">Parlare (to speak)</option>
+                        <option value="mangiare">Mangiare (to eat)</option>
+                        <option value="vedere">Vedere (to see)</option>
+                        <option value="dormire">Dormire (to sleep)</option>
+                        <option value="essere">Essere (to be)</option>
+                        <option value="avere">Avere (to have)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Select a tense:</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="tense-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-tense="presente">Presente</button>
+                        <button class="tense-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-tense="passato-prossimo">Passato Prossimo</button>
+                        <button class="tense-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-tense="imperfetto">Imperfetto</button>
+                        <button class="tense-btn px-4 py-2 rounded-full bg-[#F1FAEE] text-[#1D3557] border border-[#A8DADC] hover:bg-[#A8DADC]" data-tense="futuro">Futuro</button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="verb-conjugation-table table-auto w-full border-collapse">
+                        <thead>
+                            <tr class="bg-[#457B9D] text-white">
+                                <th class="px-4 py-3 text-left">Pronoun</th>
+                                <th class="px-4 py-3 text-left">Conjugation</th>
+                                <th class="px-4 py-3 text-left">Your Answer</th>
+                                <th class="px-4 py-3 text-left">Check</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border px-4 py-2">Io</td>
+                                <td class="border px-4 py-2 conjugation-cell" data-pronoun="io"></td>
+                                <td class="border px-4 py-2"><input type="text" class="answer-input input input-bordered w-full max-w-xs bg-white border-[#A8DADC]" data-pronoun="io"></td>
+                                <td class="border px-4 py-2"><button class="check-btn btn btn-sm bg-[#A8DADC] text-[#1D3557]" data-pronoun="io">Check</button></td>
+                            </tr>
+                            <tr>
+                                <td class="border px-4 py-2">Tu</td>
+                                <td class="border px-4 py-2 conjugation-cell" data-pronoun="tu"></td>
+                                <td class="border px-4 py-2"><input type="text" class="answer-input input input-bordered w-full max-w-xs bg-white border-[#A8DADC]" data-pronoun="tu"></td>
+                                <td class="border px-4 py-2"><button class="check-btn btn btn-sm bg-[#A8DADC] text-[#1D3557]" data-pronoun="tu">Check</button></td>
+                            </tr>
+                            <tr>
+                                <td class="border px-4 py-2">Lui/Lei</td>
+                                <td class="border px-4 py-2 conjugation-cell" data-pronoun="lui"></td>
+                                <td class="border px-4 py-2"><input type="text" class="answer-input input input-bordered w-full max-w-xs bg-white border-[#A8DADC]" data-pronoun="lui"></td>
+                                <td class="border px-4 py-2"><button class="check-btn btn btn-sm bg-[#A8DADC] text-[#1D3557]" data-pronoun="lui">Check</button></td>
+                            </tr>
+                            <tr>
+                                <td class="border px-4 py-2">Noi</td>
+                                <td class="border px-4 py-2 conjugation-cell" data-pronoun="noi"></td>
+                                <td class="border px-4 py-2"><input type="text" class="answer-input input input-bordered w-full max-w-xs bg-white border-[#A8DADC]" data-pronoun="noi"></td>
+                                <td class="border px-4 py-2"><button class="check-btn btn btn-sm bg-[#A8DADC] text-[#1D3557]" data-pronoun="noi">Check</button></td>
+                            </tr>
+                            <tr>
+                                <td class="border px-4 py-2">Voi</td>
+                                <td class="border px-4 py-2 conjugation-cell" data-pronoun="voi"></td>
+                                <td class="border px-4 py-2"><input type="text" class="answer-input input input-bordered w-full max-w-xs bg-white border-[#A8DADC]" data-pronoun="voi"></td>
+                                <td class="border px-4 py-2"><button class="check-btn btn btn-sm bg-[#A8DADC] text-[#1D3557]" data-pronoun="voi">Check</button></td>
+                            </tr>
+                            <tr>
+                                <td class="border px-4 py-2">Loro</td>
+                                <td class="border px-4 py-2 conjugation-cell" data-pronoun="loro"></td>
+                                <td class="border px-4 py-2"><input type="text" class="answer-input input input-bordered w-full max-w-xs bg-white border-[#A8DADC]" data-pronoun="loro"></td>
+                                <td class="border px-4 py-2"><button class="check-btn btn btn-sm bg-[#A8DADC] text-[#1D3557]" data-pronoun="loro">Check</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 flex justify-between items-center">
+                    <button id="show-all-conjugations" class="btn bg-[#457B9D] text-white hover:bg-[#1D3557]">
+                        <i class="fas fa-eye mr-2"></i> Show All Conjugations
+                    </button>
+                    <div id="verb-score" class="text-lg font-semibold text-[#1D3557]">
+                        Score: <span id="correct-count">0</span>/6
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Listening Tab -->
+            <div id="listening" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 text-[#1D3557] flex items-center">
+                    <i class="fas fa-headphones mr-3 text-[#E63946]"></i> Listening Comprehension
+                </h2>
+                
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="flex-1">
+                        <div class="bg-[#F1FAEE] p-6 rounded-xl mb-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold">Dialogue: At the Restaurant</h3>
+                                <div class="flex space-x-2">
+                                    <button class="audio-control btn btn-circle btn-sm bg-[#457B9D] text-white">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="audio-control btn btn-circle btn-sm bg-gray-200 text-gray-700">
+                                        <i class="fas fa-pause"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-center mb-4">
+                                <div class="audio-visualizer flex items-end h-12 space-x-1">
+                                    <div class="audio-wave w-2 bg-[#E63946] rounded-t"></div>
+                                    <div class="audio-wave w-2 bg-[#457B9D] rounded-t"></div>
+                                    <div class="audio-wave w-2 bg-[#A8DADC] rounded-t"></div>
+                                    <div class="audio-wave w-2 bg-[#457B9D] rounded-t"></div>
+                                    <div class="audio-wave w-2 bg-[#E63946] rounded-t"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-gray-700 italic mb-4">
+                                <p id="current-phrase">Click play to start listening...</p>
+                            </div>
+                            
+                            <div class="flex items-center text-sm text-gray-500">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                <span>Listen carefully and answer the questions below</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl border border-[#A8DADC]">
+                            <h3 class="text-lg font-semibold mb-4">Comprehension Questions</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="font-medium mb-2">1. What does the customer order?</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q1" class="radio radio-accent mr-2" value="A">
+                                            <span>Pasta al pomodoro</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q1" class="radio radio-accent mr-2" value="B">
+                                            <span>Risotto ai funghi</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q1" class="radio radio-accent mr-2" value="C">
+                                            <span>Pizza margherita</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-medium mb-2">2. What drink does the customer ask for?</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q2" class="radio radio-accent mr-2" value="A">
+                                            <span>Acqua minerale</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q2" class="radio radio-accent mr-2" value="B">
+                                            <span>Vino rosso</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q2" class="radio radio-accent mr-2" value="C">
+                                            <span>Birra</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-medium mb-2">3. How does the dialogue end?</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q3" class="radio radio-accent mr-2" value="A">
+                                            <span>The customer asks for the bill</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q3" class="radio radio-accent mr-2" value="B">
+                                            <span>The waiter recommends dessert</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="q3" class="radio radio-accent mr-2" value="C">
+                                            <span>They discuss the weather</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button id="check-listening-answers" class="btn bg-[#457B9D] text-white mt-6 hover:bg-[#1D3557]">
+                                <i class="fas fa-check-circle mr-2"></i> Check Answers
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1">
+                        <div class="bg-white p-6 rounded-xl border border-[#A8DADC] h-full">
+                            <h3 class="text-lg font-semibold mb-4">Transcript</h3>
+                            <div class="prose max-w-none text-gray-700">
+                                <p class="dialogue-line" data-start="0"><strong>Cameriere:</strong> Buonasera, avete già scelto?</p>
+                                <p class="dialogue-line" data-start="3"><strong>Cliente:</strong> Sì, vorrei la pasta al pomodoro, per favore.</p>
+                                <p class="dialogue-line" data-start="6"><strong>Cameriere:</strong> Ecco, un'ottima scelta. E da bere?</p>
+                                <p class="dialogue-line" data-start="9"><strong>Cliente:</strong> Una bottiglia d'acqua minerale, grazie.</p>
+                                <p class="dialogue-line" data-start="12"><strong>Cameriere:</strong> Subito. Desidera anche un antipasto?</p>
+                                <p class="dialogue-line" data-start="15"><strong>Cliente:</strong> No, grazie. Solo il primo piatto.</p>
+                                <p class="dialogue-line" data-start="18"><strong>Cameriere:</strong> Va bene. A presto con il suo ordine.</p>
+                            </div>
+                            
+                            <div class="mt-8">
+                                <h4 class="font-medium mb-2">Vocabulary from this dialogue:</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="flex items-start">
+                                        <span class="bg-[#A8DADC] text-[#1D3557] rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">1</span>
+                                        <div>
+                                            <p class="font-semibold">scelto</p>
+                                            <p class="text-sm text-gray-600">chosen (past participle of "scegliere")</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="bg-[#A8DADC] text-[#1D3557] rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">2</span>
+                                        <div>
+                                            <p class="font-semibold">vorrei</p>
+                                            <p class="text-sm text-gray-600">I would like (conditional of "volere")</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="bg-[#A8DADC] text-[#1D3557] rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">3</span>
+                                        <div>
+                                            <p class="font-semibold">ecco</p>
+                                            <p class="text-sm text-gray-600">here is/are</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="bg-[#A8DADC] text-[#1D3557] rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">4</span>
+                                        <div>
+                                            <p class="font-semibold">desidera</p>
+                                            <p class="text-sm text-gray-600">would you like (formal)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vocabulary Builder Tab -->
+            <div id="vocabulary" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 text-[#1D3557] flex items-center">
+                    <i class="fas fa-book-open mr-3 text-[#E63946]"></i> Vocabulary Builder
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-[#F1FAEE] p-6 rounded-xl border border-[#A8DADC]">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-search mr-2 text-[#457B9D]"></i> Word Search
+                        </h3>
+                        <p class="text-gray-700 mb-4">Find Italian words related to the topic of "Travel".</p>
+                        <button class="btn bg-[#457B9D] text-white hover:bg-[#1D3557] w-full">
+                            Start Exercise
+                        </button>
+                    </div>
+                    
+                    <div class="bg-[#F1FAEE] p-6 rounded-xl border border-[#A8DADC]">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-random mr-2 text-[#457B9D]"></i> Word Match
+                        </h3>
+                        <p class="text-gray-700 mb-4">Match Italian words with their English translations.</p>
+                        <button class="btn bg-[#457B9D] text-white hover:bg-[#1D3557] w-full">
+                            Start Exercise
+                        </button>
+                    </div>
+                    
+                    <div class="bg-[#F1FAEE] p-6 rounded-xl border border-[#A8DADC]">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-spell-check mr-2 text-[#457B9D]"></i> Spelling Practice
+                        </h3>
+                        <p class="text-gray-700 mb-4">Listen to the word and try to spell it correctly.</p>
+                        <button class="btn bg-[#457B9D] text-white hover:bg-[#1D3557] w-full">
+                            Start Exercise
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl border border-[#A8DADC]">
+                    <h3 class="text-lg font-semibold mb-4">Create Your Own Vocabulary List</h3>
+                    
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <div class="flex-1">
+                            <label class="block text-gray-700 mb-2">Italian Word</label>
+                            <input type="text" id="italian-word" class="input input-bordered w-full bg-white border-[#A8DADC]">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-gray-700 mb-2">English Translation</label>
+                            <input type="text" id="english-translation" class="input input-bordered w-full bg-white border-[#A8DADC]">
+                        </div>
+                        <div class="flex items-end">
+                            <button id="add-vocab-word" class="btn bg-[#457B9D] text-white hover:bg-[#1D3557]">
+                                <i class="fas fa-plus mr-2"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="table-auto w-full">
+                            <thead>
+                                <tr class="bg-[#457B9D] text-white">
+                                    <th class="px-4 py-3 text-left">Italian</th>
+                                    <th class="px-4 py-3 text-left">English</th>
+                                    <th class="px-4 py-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vocab-list">
+                                <!-- Vocabulary items will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Save your list:</label>
+                            <input type="text" id="vocab-list-name" placeholder="List name" class="input input-bordered bg-white border-[#A8DADC] mr-2">
+                            <button id="save-vocab-list" class="btn bg-[#457B9D] text-white hover:bg-[#1D3557]">
+                                <i class="fas fa-save mr-2"></i> Save
+                            </button>
+                        </div>
+                        <button id="export-vocab-list" class="btn bg-[#A8DADC] text-[#1D3557] hover:bg-[#457B9D] hover:text-white">
+                            <i class="fas fa-file-export mr-2"></i> Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grammar Check Tab -->
+            <div id="grammar" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 text-[#1D3557] flex items-center">
+                    <i class="fas fa-spell-check mr-3 text-[#E63946]"></i> Grammar Check
+                </h2>
+                
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="flex-1">
+                        <div class="bg-white p-6 rounded-xl border border-[#A8DADC] mb-6">
+                            <h3 class="text-lg font-semibold mb-4">Write Your Text</h3>
+                            <textarea id="grammar-text" class="textarea textarea-bordered w-full h-48 bg-white border-[#A8DADC]" placeholder="Write your Italian text here..."></textarea>
+                            <button id="check-grammar" class="btn bg-[#457B9D] text-white mt-4 hover:bg-[#1D3557]">
+                                <i class="fas fa-check-double mr-2"></i> Check Grammar
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl border border-[#A8DADC]">
+                            <h3 class="text-lg font-semibold mb-4">Common Grammar Rules</h3>
+                            <div class="space-y-4">
+                                <div class="collapse collapse-plus border border-[#A8DADC]">
+                                    <input type="radio" name="grammar-rules" checked="checked"> 
+                                    <div class="collapse-title text-lg font-medium">
+                                        Noun-Adjective Agreement
+                                    </div>
+                                    <div class="collapse-content"> 
+                                        <p>In Italian, adjectives must agree in gender and number with the nouns they modify. For example: "un libro interessante" (masculine singular) but "una storia interessante" (feminine singular).</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="collapse collapse-plus border border-[#A8DADC]">
+                                    <input type="radio" name="grammar-rules"> 
+                                    <div class="collapse-title text-lg font-medium">
+                                        Verb Conjugation
+                                    </div>
+                                    <div class="collapse-content"> 
+                                        <p>Italian verbs conjugate according to person, number, tense, and mood. There are three conjugation groups (-are, -ere, -ire) and many irregular verbs that must be memorized.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="collapse collapse-plus border border-[#A8DADC]">
+                                    <input type="radio" name="grammar-rules"> 
+                                    <div class="collapse-title text-lg font-medium">
+                                        Definite Articles
+                                    </div>
+                                    <div class="collapse-content"> 
+                                        <p>Italian has several forms of the definite article ("the"): il, lo, la, i, gli, le. The choice depends on gender, number, and the initial letter of the following word.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1">
+                        <div class="bg-white p-6 rounded-xl border border-[#A8DADC] h-full">
+                            <h3 class="text-lg font-semibold mb-4">Grammar Suggestions</h3>
+                            <div id="grammar-results" class="prose max-w-none">
+                                <div class="text-center text-gray-500 py-12">
+                                    <i class="fas fa-comment-dots text-4xl mb-4 text-[#A8DADC]"></i>
+                                    <p>Your grammar suggestions will appear here after checking your text.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8">
+                                <h4 class="font-medium mb-2">Recent Corrections</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-start">
+                                        <div class="bg-[#E63946] text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">!</div>
+                                        <div>
+                                            <p class="font-semibold">"Ho andato" → "Sono andato"</p>
+                                            <p class="text-sm text-gray-600">The verb "andare" uses "essere" as auxiliary in compound tenses.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="bg-[#E63946] text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">!</div>
+                                        <div>
+                                            <p class="font-semibold">"La libro" → "Il libro"</p>
+                                            <p class="text-sm text-gray-600">"Libro" is masculine, so it requires the masculine definite article.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center text-gray-600 mt-12">
+            <p>Italian Language Learning Suite © 2023 | Designed for Classroom Use</p>
+            <div class="flex justify-center space-x-4 mt-2">
+                <a href="#" class="text-[#457B9D] hover:text-[#1D3557]"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-[#457B9D] hover:text-[#1D3557]"><i class="fas fa-info-circle"></i></a>
+                <a href="#" class="text-[#457B9D] hover:text-[#1D3557]"><i class="fas fa-envelope"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('[data-tab]').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('tab-active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Flashcards Functionality
+        const flashcards = [
+            { italian: "Ciao", english: "Hello", category: "basics" },
+            { italian: "Grazie", english: "Thank you", category: "basics" },
+            { italian: "Per favore", english: "Please", category: "basics" },
+            { italian: "Pane", english: "Bread", category: "food" },
+            { italian: "Formaggio", english: "Cheese", category: "food" },
+            { italian: "Vino", english: "Wine", category: "food" },
+            { italian: "Aeroporto", english: "Airport", category: "travel" },
+            { italian: "Hotel", english: "Hotel", category: "travel" },
+            { italian: "Treno", english: "Train", category: "travel" },
+            { italian: "Parlare", english: "To speak", category: "verbs" },
+            { italian: "Mangiare", english: "To eat", category: "verbs" },
+            { italian: "Dormire", english: "To sleep", category: "verbs" },
+            { italian: "Felice", english: "Happy", category: "adjectives" },
+            { italian: "Triste", english: "Sad", category: "adjectives" },
+            { italian: "Interessante", english: "Interesting", category: "adjectives" }
+        ];
+        
+        let currentCardIndex = 0;
+        let filteredCards = [...flashcards];
+        
+        const flashcardContainer = document.getElementById('flashcard-container');
+        const flashcardWord = document.getElementById('flashcard-word');
+        const flashcardTranslation = document.getElementById('flashcard-translation');
+        const cardCounter = document.getElementById('card-counter');
+        const cardProgress = document.getElementById('card-progress');
+        const prevCardBtn = document.getElementById('prev-card');
+        const nextCardBtn = document.getElementById('next-card');
+        
+        function updateFlashcard() {
+            flashcardWord.textContent = filteredCards[currentCardIndex].italian;
+            flashcardTranslation.textContent = filteredCards[currentCardIndex].english;
+            cardCounter.textContent = `${currentCardIndex + 1}/${filteredCards.length}`;
+            cardProgress.style.width = `${((currentCardIndex + 1) / filteredCards.length) * 100}%`;
+            
+            // Reset card flip state
+            flashcardContainer.querySelector('.card-flip').classList.remove('card-flipped');
+        }
+        
+        flashcardContainer.addEventListener('click', () => {
+            flashcardContainer.querySelector('.card-flip').classList.toggle('card-flipped');
+        });
+        
+        prevCardBtn.addEventListener('click', () => {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateFlashcard();
+            }
+        });
+        
+        nextCardBtn.addEventListener('click', () => {
+            if (currentCardIndex < filteredCards.length - 1) {
+                currentCardIndex++;
+                updateFlashcard();
+            }
+        });
+        
+        // Filter cards by category
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.getAttribute('data-category');
+                if (category === 'all') {
+                    filteredCards = [...flashcards];
+                } else {
+                    filteredCards = flashcards.filter(card => card.category === category);
+                }
+                currentCardIndex = 0;
+                updateFlashcard();
+                
+                // Update active category button
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('bg-[#457B9D]', 'text-white'));
+                btn.classList.add('bg-[#457B9D]', 'text-white');
+            });
+        });
+        
+        // Initialize first card
+        updateFlashcard();
+        
+        // Verb Conjugation Functionality
+        const verbs = {
+            parlare: {
+                presente: {
+                    io: "parlo",
+                    tu: "parli",
+                    lui: "parla",
+                    noi: "parliamo",
+                    voi: "parlate",
+                    loro: "parlano"
+                },
+                "passato-prossimo": {
+                    io: "ho parlato",
+                    tu: "hai parlato",
+                    lui: "ha parlato",
+                    noi: "abbiamo parlato",
+                    voi: "avete parlato",
+                    loro: "hanno parlato"
+                },
+                imperfetto: {
+                    io: "parlavo",
+                    tu: "parlavi",
+                    lui: "parlava",
+                    noi: "parlavamo",
+                    voi: "parlavate",
+                    loro: "parlavano"
+                },
+                futuro: {
+                    io: "parlerò",
+                    tu: "parlerai",
+                    lui: "parlerà",
+                    noi: "parleremo",
+                    voi: "parlerete",
+                    loro: "parleranno"
+                }
+            },
+            mangiare: {
+                presente: {
+                    io: "mangio",
+                    tu: "mangi",
+                    lui: "mangia",
+                    noi: "mangiamo",
+                    voi: "mangiate",
+                    loro: "mangiano"
+                },
+                "passato-prossimo": {
+                    io: "ho mangiato",
+                    tu: "hai mangiato",
+                    lui: "ha mangiato",
+                    noi: "abbiamo mangiato",
+                    voi: "avete mangiato",
+                    loro: "hanno mangiato"
+                },
+                imperfetto: {
+                    io: "mangiavo",
+                    tu: "mangiavi",
+                    lui: "mangiava",
+                    noi: "mangiavamo",
+                    voi: "mangiavate",
+                    loro: "mangiavano"
+                },
+                futuro: {
+                    io: "mangerò",
+                    tu: "mangerai",
+                    lui: "mangerà",
+                    noi: "mangeremo",
+                    voi: "mangerete",
+                    loro: "mangeranno"
+                }
+            },
+            vedere: {
+                presente: {
+                    io: "vedo",
+                    tu: "vedi",
+                    lui: "vede",
+                    noi: "vediamo",
+                    voi: "vedete",
+                    loro: "vedono"
+                },
+                "passato-prossimo": {
+                    io: "ho visto",
+                    tu: "hai visto",
+                    lui: "ha visto",
+                    noi: "abbiamo visto",
+                    voi: "avete visto",
+                    loro: "hanno visto"
+                },
+                imperfetto: {
+                    io: "vedevo",
+                    tu: "vedevi",
+                    lui: "vedeva",
+                    noi: "vedevamo",
+                    voi: "vedevate",
+                    loro: "vedevano"
+                },
+                futuro: {
+                    io: "vedrò",
+                    tu: "vedrai",
+                    lui: "vedrà",
+                    noi: "vedremo",
+                    voi: "vedrete",
+                    loro: "vedranno"
+                }
+            },
+            dormire: {
+                presente: {
+                    io: "dormo",
+                    tu: "dormi",
+                    lui: "dorme",
+                    noi: "dormiamo",
+                    voi: "dormite",
+                    loro: "dormono"
+                },
+                "passato-prossimo": {
+                    io: "ho dormito",
+                    tu: "hai dormito",
+                    lui: "ha dormito",
+                    noi: "abbiamo dormito",
+                    voi: "avete dormito",
+                    loro: "hanno dormito"
+                },
+                imperfetto: {
+                    io: "dormivo",
+                    tu: "dormivi",
+                    lui: "dormiva",
+                    noi: "dormivamo",
+                    voi: "dormivate",
+                    loro: "dormivano"
+                },
+                futuro: {
+                    io: "dormirò",
+                    tu: "dormirai",
+                    lui: "dormirà",
+                    noi: "dormiremo",
+                    voi: "dormirete",
+                    loro: "dormiranno"
+                }
+            },
+            essere: {
+                presente: {
+                    io: "sono",
+                    tu: "sei",
+                    lui: "è",
+                    noi: "siamo",
+                    voi: "siete",
+                    loro: "sono"
+                },
+                "passato-prossimo": {
+                    io: "sono stato/a",
+                    tu: "sei stato/a",
+                    lui: "è stato/a",
+                    noi: "siamo stati/e",
+                    voi: "siete stati/e",
+                    loro: "sono stati/e"
+                },
+                imperfetto: {
+                    io: "ero",
+                    tu: "eri",
+                    lui: "era",
+                    noi: "eravamo",
+                    voi: "eravate",
+                    loro: "erano"
+                },
+                futuro: {
+                    io: "sarò",
+                    tu: "sarai",
+                    lui: "sarà",
+                    noi: "saremo",
+                    voi: "sarete",
+                    loro: "saranno"
+                }
+            },
+            avere: {
+                presente: {
+                    io: "ho",
+                    tu: "hai",
+                    lui: "ha",
+                    noi: "abbiamo",
+                    voi: "avete",
+                    loro: "hanno"
+                },
+                "passato-prossimo": {
+                    io: "ho avuto",
+                    tu: "hai avuto",
+                    lui: "ha avuto",
+                    noi: "abbiamo avuto",
+                    voi: "avete avuto",
+                    loro: "hanno avuto"
+                },
+                imperfetto: {
+                    io: "avevo",
+                    tu: "avevi",
+                    lui: "aveva",
+                    noi: "avevamo",
+                    voi: "avevate",
+                    loro: "avevano"
+                },
+                futuro: {
+                    io: "avrò",
+                    tu: "avrai",
+                    lui: "avrà",
+                    noi: "avremo",
+                    voi: "avrete",
+                    loro: "avranno"
+                }
+            }
+        };
+        
+        let currentVerb = "parlare";
+        let currentTense = "presente";
+        let correctAnswers = 0;
+        
+        const verbSelect = document.getElementById('verb-select');
+        const showAllBtn = document.getElementById('show-all-conjugations');
+        const correctCount = document.getElementById('correct-count');
+        
+        function updateVerbConjugation() {
+            const conjugations = verbs[currentVerb][currentTense];
+            
+            // Clear previous correct/incorrect markings
+            document.querySelectorAll('.conjugation-cell').forEach(cell => {
+                cell.classList.remove('correct', 'incorrect');
+                cell.textContent = '';
+            });
+            
+            // Clear input fields
+            document.querySelectorAll('.answer-input').forEach(input => {
+                input.value = '';
+                input.parentElement.classList.remove('correct', 'incorrect');
+            });
+            
+            // Reset score
+            correctAnswers = 0;
+            correctCount.textContent = '0';
+        }
+        
+        verbSelect.addEventListener('change', () => {
+            currentVerb = verbSelect.value;
+            updateVerbConjugation();
+        });
+        
+        document.querySelectorAll('.tense-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentTense = btn.getAttribute('data-tense');
+                updateVerbConjugation();
+                
+                // Update active tense button
+                document.querySelectorAll('.tense-btn').forEach(b => b.classList.remove('bg-[#457B9D]', 'text-white'));
+                btn.classList.add('bg-[#457B9D]', 'text-white');
+            });
+        });
+        
+        document.querySelectorAll('.check-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const pronoun = btn.getAttribute('data-pronoun');
+                const input = document.querySelector(`.answer-input[data-pronoun="${pronoun}"]`);
+                const cell = document.querySelector(`.conjugation-cell[data-pronoun="${pronoun}"]`);
+                const correctAnswer = verbs[currentVerb][currentTense][pronoun];
+                
+                if (input.value.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                    input.parentElement.classList.add('correct');
+                    input.parentElement.classList.remove('incorrect');
+                    cell.textContent = correctAnswer;
+                    cell.classList.add('correct');
+                    correctAnswers++;
+                    correctCount.textContent = correctAnswers;
+                } else {
+                    input.parentElement.classList.add('incorrect');
+                    input.parentElement.classList.remove('correct');
+                    cell.textContent = correctAnswer;
+                    cell.classList.add('incorrect');
+                }
+            });
+        });
+        
+        showAllBtn.addEventListener('click', () => {
+            const conjugations = verbs[currentVerb][currentTense];
+            
+            Object.keys(conjugations).forEach(pronoun => {
+                const cell = document.querySelector(`.conjugation-cell[data-pronoun="${pronoun}"]`);
+                cell.textContent = conjugations[pronoun];
+                cell.classList.add('correct');
+            });
+        });
+        
+        // Initialize verb conjugation
+        document.querySelector('.tense-btn').click();
+        
+        // Listening Exercise Functionality
+        const dialoguePhrases = [
+            "Buonasera, avete già scelto?",
+            "Sì, vorrei la pasta al pomodoro, per favore.",
+            "Ecco, un'ottima scelta. E da bere?",
+            "Una bottiglia d'acqua minerale, grazie.",
+            "Subito. Desidera anche un antipasto?",
+            "No, grazie. Solo il primo piatto.",
+            "Va bene. A presto con il suo ordine."
+        ];
+        
+        let currentPhraseIndex = 0;
+        let isPlaying = false;
+        
+        const currentPhraseElement = document.getElementById('current-phrase');
+        const playBtn = document.querySelector('.audio-control:nth-child(1)');
+        const pauseBtn = document.querySelector('.audio-control:nth-child(2)');
+        const checkAnswersBtn = document.getElementById('check-listening-answers');
+        
+        function updateCurrentPhrase() {
+            currentPhraseElement.textContent = dialoguePhrases[currentPhraseIndex];
+        }
+        
+        playBtn.addEventListener('click', () => {
+            isPlaying = true;
+            playBtn.classList.add('bg-[#457B9D]', 'text-white');
+            pauseBtn.classList.remove('bg-[#457B9D]', 'text-white');
+            
+            // Simulate audio playback
+            let interval = setInterval(() => {
+                if (currentPhraseIndex < dialoguePhrases.length - 1) {
+                    currentPhraseIndex++;
+                    updateCurrentPhrase();
+                } else {
+                    clearInterval(interval);
+                    isPlaying = false;
+                    playBtn.classList.remove('bg-[#457B9D]', 'text-white');
+                    currentPhraseIndex = 0;
+                    updateCurrentPhrase();
+                }
+            }, 3000);
+        });
+        
+        pauseBtn.addEventListener('click', () => {
+            isPlaying = false;
+            pauseBtn.classList.add('bg-[#457B9D]', 'text-white');
+            playBtn.classList.remove('bg-[#457B9D]', 'text-white');
+        });
+        
+        checkAnswersBtn.addEventListener('click', () => {
+            // In a real app, this would check answers against correct ones
+            alert('Answers checked! In a real application, this would show which answers were correct.');
+        });
+        
+        // Initialize listening exercise
+        updateCurrentPhrase();
+        
+        // Vocabulary Builder Functionality
+        const vocabList = document.getElementById('vocab-list');
+        const italianWordInput = document.getElementById('italian-word');
+        const englishTranslationInput = document.getElementById('english-translation');
+        const addVocabWordBtn = document.getElementById('add-vocab-word');
+        const saveVocabListBtn = document.getElementById('save-vocab-list');
+        const exportVocabListBtn = document.getElementById('export-vocab-list');
+        
+        function addVocabWord(italian, english) {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="px-4 py-2">${italian}</td>
+                <td class="px-4 py-2">${english}</td>
+                <td class="px-4 py-2">
+                    <button class="delete-word btn btn-xs bg-[#E63946] text-white">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            vocabList.appendChild(row);
+            
+            // Add delete functionality
+            row.querySelector('.delete-word').addEventListener('click', () => {
+                row.remove();
+            });
+        }
+        
+        addVocabWordBtn.addEventListener('click', () => {
+            const italian = italianWordInput.value.trim();
+            const english = englishTranslationInput.value.trim();
+            
+            if (italian && english) {
+                addVocabWord(italian, english);
+                italianWordInput.value = '';
+                englishTranslationInput.value = '';
+                italianWordInput.focus();
+            }
+        });
+        
+        saveVocabListBtn.addEventListener('click', () => {
+            const listName = document.getElementById('vocab-list-name').value.trim();
+            if (listName) {
+                alert(`Vocabulary list "${listName}" saved! In a real app, this would save to a database.`);
+            } else {
+                alert('Please enter a name for your vocabulary list.');
+            }
+        });
+        
+        exportVocabListBtn.addEventListener('click', () => {
+            alert('Vocabulary list exported! In a real app, this would download a CSV or PDF.');
+        });
+        
+        // Grammar Check Functionality
+        const grammarText = document.getElementById('grammar-text');
+        const checkGrammarBtn = document.getElementById('check-grammar');
+        const grammarResults = document.getElementById('grammar-results');
+        
+        checkGrammarBtn.addEventListener('click', () => {
+            const text = grammarText.value.trim();
+            if (text) {
+                // Simulate grammar check
+                grammarResults.innerHTML = `
+                    <div class="p-4 bg-[#F1FAEE] rounded-lg mb-4">
+                        <h4 class="font-bold text-lg mb-2">Grammar Analysis</h4>
+                        <p>Your text contains <span class="font-bold">3 potential issues</span>:</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="bg-[#E63946] text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">1</div>
+                            <div>
+                                <p class="font-semibold">"Ho andato" → "Sono andato"</p>
+                                <p class="text-sm text-gray-600">The verb "andare" uses "essere" as auxiliary in compound tenses, not "avere".</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-[#E63946] text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">2</div>
+                            <div>
+                                <p class="font-semibold">"La libro" → "Il libro"</p>
+                                <p class="text-sm text-gray-600">"Libro" is masculine, so it requires the masculine definite article "il".</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-[#457B9D] text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">3</div>
+                            <div>
+                                <p class="font-semibold">Consider using subjunctive</p>
+                                <p class="text-sm text-gray-600">In the phrase "penso che", the following verb might need to be in the subjunctive mood ("sia" instead of "è").</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-[#A8DADC] rounded-lg">
+                        <h4 class="font-bold text-lg mb-2">Corrected Version</h4>
+                        <p class="italic">${text.replace("Ho andato", "Sono andato").replace("La libro", "Il libro")}</p>
+                    </div>
+                `;
+            } else {
+                grammarResults.innerHTML = `
+                    <div class="text-center text-gray-500 py-12">
+                        <i class="fas fa-exclamation-circle text-4xl mb-4 text-[#E63946]"></i>
+                        <p>Please enter some text to check the grammar.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

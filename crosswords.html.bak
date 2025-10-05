@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impariamo l'Italiano! - Crossword Game</title>
+  <!-- CSS loaded dynamically to prevent caching -->
+  <script src="js/css-loader.js"></script>
+  <style>
+    /* Crossword-specific styles */
+    /* These styles are unique to the crossword game mechanics */
+    table.crossword {
+      border-collapse: collapse;
+      margin: 20px auto;
+    }
+    table.crossword td {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ccc;
+      position: relative;
+      text-align: center;
+      vertical-align: middle;
+      padding: 0;
+    }
+    table.crossword td.black {
+      background: #000;
+    }
+    table.crossword td.white {
+      background: #ffffff;
+    }
+    table.crossword td.white input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      text-align: center;
+      font-size: 20px;
+      font-family: inherit;
+      text-transform: uppercase;
+    }
+    .number {
+      position: absolute;
+      top: 1px;
+      left: 2px;
+      font-size: 10px;
+      color: #000;
+    }
+    @media (max-width: 600px) {
+      table.crossword td {
+        width: 30px;
+        height: 30px;
+      }
+      table.crossword td.white input {
+        font-size: 16px;
+      }
+    }
+  </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-QJL9EQGT3Y');
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Impariamo l'Italiano!</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html">Verb Tenses</a>
+          <a href="reflexives.html">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html">Memory Game</a>
+      <a href="wordle.html">Wordle</a>
+      <a href="fiore.html">Fiore</a>
+      <a href="crosswords.html" class="active" aria-current="page">Crosswords</a>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+
+  <main class="container">
+    <!-- Category Selection Section -->
+    <section id="categorySelection" class="game-section">
+      <h2>Select a Category</h2>
+      <select id="categorySelect">
+        <option value="colori">Colori</option>
+        <option value="animali">Animali</option>
+        <option value="cibo">Cibo</option>
+        <option value="viaggiare">Viaggiare</option>
+        <option value="lavori">Lavori</option>
+        <option value="hobbies">Hobbies</option>
+      </select>
+      <br>
+      <button onclick="startGame()">Start Game</button>
+    </section>
+    
+    <!-- Crossword Game Section -->
+    <section id="crosswordGame" class="game-section" style="display:none;">
+      <h2 id="gameTitle"></h2>
+      <div id="puzzleContainer"></div>
+      <button onclick="checkPuzzle()">Check Answers</button>
+      <button onclick="goBack()">Change Category</button>
+      <div id="gameFeedback" style="margin-top: 20px; font-weight: bold;"></div>
+      <div id="clues">
+        <h3>Clues</h3>
+        <div id="acrossClues"></div>
+        <div id="downClues"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://beatricecarnelutti.com/impariamo">Impariamo l'Italiano!</a> by <span property="cc:attributionName">Beatrice Carnelutti</span> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a>
+  </footer>
+  
+  <script>
+    // Sample puzzles for each category.
+    // Each puzzle has a grid (9x9), a numbers array (with clue numbers), clues (across and down), and a solution grid.
+    // For brevity these puzzles are very simple and manually defined.
+    const puzzles = {
+      colori: {
+        grid: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "R",  "O",  "S",  "S",  "O",  "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "B",  "I",  "A",  "N",  "C",  "O",  null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "V",  "E",  "R",  "D",  "E",  "",   null],
+          [null, "",   "B",  "L",  "U",  "",   "",   "",   null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        numbers: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, 1,    null, null, 2,    null, null, 3,    null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 4,    null, null, null, null, null, null, null],
+          [null, null, null, null, 5,    null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 6,    null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        clues: {
+          across: [
+            { number: 2, clue: "Color of passion", answer: "rosso" },
+            { number: 5, clue: "Neutral color", answer: "bianco" }
+          ],
+          down: [
+            { number: 1, clue: "A cool color", answer: "blu" },
+            { number: 6, clue: "Color of nature", answer: "verde" },
+            { number: 3, clue: "Warm color", answer: "giallo" },
+            { number: 4, clue: "Dark color", answer: "nero" }
+          ]
+        },
+        solution: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "G",  "I",  "A",  "L",  "L",  "O",  "X",  null],
+          [null, "X",  "R",  "O",  "S",  "S",  "O",  "X",  null],
+          [null, "N",  "X",  "X",  "X",  "X",  "X",  "X",  null],
+          [null, "X",  "B",  "I",  "A",  "N",  "C",  "O",  null],
+          [null, "X",  "X",  "X",  "X",  "X",  "X",  "X",  null],
+          [null, "V",  "E",  "R",  "D",  "E",  "X",  "X",  null],
+          [null, "B",  "L",  "U",  "X",  "X",  "X",  "X",  null],
+          [null, null, null, null, null, null, null, null, null]
+        ]
+      },
+      animali: {
+        grid: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "G",  "A",  "T",  "T",  "O",  "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "C",  "A",  "N",  "E",  "",   "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "U",  "C",  "C",  "E",  "L",  "L",  null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        numbers: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, 1,    null, null, 2,    null, null, 3,    null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 4,    null, null, null, null, null, null, null],
+          [null, null, null, null, 5,    null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 6,    null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        clues: {
+          across: [
+            { number: 2, clue: "Feline pet", answer: "gatto" },
+            { number: 5, clue: "Bark!", answer: "cane" }
+          ],
+          down: [
+            { number: 1, clue: "Winged creature", answer: "uccello" },
+            { number: 6, clue: "Swims in water", answer: "pesce" }
+          ]
+        },
+        solution: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "U", "X", "X", "A", "X", "X", "X", null],
+          [null, "X", "G", "A", "T", "T", "O", "X", null],
+          [null, "C", "X", "X", "X", "X", "X", "X", null],
+          [null, "X", "C", "A", "N", "E", "X", "X", null],
+          [null, "X", "X", "X", "X", "X", "X", "X", null],
+          [null, "U", "C", "C", "E", "L", "L", "O", null],
+          [null, "X", "X", "X", "X", "X", "X", "X", null],
+          [null, null, null, null, null, null, null, null, null]
+        ]
+      },
+      cibo: {
+        grid: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "P",  "A",  "N",  "E",  "",   "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "L",  "A",  "T",  "T",  "E",  "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "F",  "O",  "R",  "M",  "A",  "G",  null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        numbers: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, 1,    null, null, 2,    null, null, 3,    null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 4,    null, null, null, null, null, null, null],
+          [null, null, null, null, 5,    null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 6,    null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        clues: {
+          across: [
+            { number: 2, clue: "Staple food", answer: "pane" },
+            { number: 5, clue: "Dairy drink", answer: "latte" }
+          ],
+          down: [
+            { number: 1, clue: "Curdled delight", answer: "formaggio" },
+            { number: 6, clue: "Juicy fruit", answer: "pomodoro" }
+          ]
+        },
+        solution: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "F", "X", "X", "A", "X", "X", "X", null],
+          [null, "X", "P", "A", "N", "E", "X", "X", null],
+          [null, "O", "X", "X", "X", "X", "X", "X", null],
+          [null, "X", "L", "A", "T", "T", "E", "X", null],
+          [null, "M", "X", "X", "X", "X", "X", "X", null],
+          [null, "F", "O", "R", "M", "A", "G", "G", null],
+          [null, "X", "X", "X", "P", "X", "X", "X", null],
+          [null, null, null, null, null, null, null, null, null]
+        ]
+      },
+      viaggiare: {
+        grid: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "T",  "R",  "E",  "N",  "O",  "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "A",  "E",  "R",  "O",  "",   "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "N",  "A",  "V",  "E",  "",   "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        numbers: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, 1,    null, null, 2,    null, null, 3,    null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 4,    null, null, null, null, null, null, null],
+          [null, null, null, null, 5,    null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 6,    null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        clues: {
+          across: [
+            { number: 2, clue: "Rail transport", answer: "treno" },
+            { number: 5, clue: "Flying machine", answer: "aereo" }
+          ],
+          down: [
+            { number: 1, clue: "Watercraft", answer: "nave" },
+            { number: 6, clue: "Road vehicle", answer: "auto" }
+          ]
+        },
+        solution: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "X", "X", "X", "T", "X", "X", "X", null],
+          [null, "X", "T", "R", "E", "N", "O", "X", null],
+          [null, "A", "X", "X", "X", "X", "X", "X", null],
+          [null, "X", "A", "E", "R", "O", "X", "X", null],
+          [null, "U", "X", "X", "X", "X", "X", "X", null],
+          [null, "N", "A", "V", "E", "X", "X", "X", null],
+          [null, "O", "X", "X", "X", "X", "X", "X", null],
+          [null, null, null, null, null, null, null, null, null]
+        ]
+      },
+      lavori: {
+        grid: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "D",  "O",  "T",  "T",  "O",  "",   null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "I",  "N",  "S",  "E",  "G",  "N",  "A"],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "A",  "V",  "V",  "O",  "C",  "A",  "T"],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        numbers: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, 1,    null, null, 2,    null, null, 3,    null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 4,    null, null, null, null, null, null, null],
+          [null, null, null, null, 5,    null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 6,    null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        clues: {
+          across: [
+            { number: 2, clue: "Medical professional", answer: "dottore" },
+            { number: 5, clue: "Educator", answer: "insegnante" }
+          ],
+          down: [
+            { number: 1, clue: "Law specialist", answer: "avvocato" },
+            { number: 6, clue: "Engineer", answer: "ingegnere" }
+          ]
+        },
+        solution: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "X", "X", "X", "D", "X", "X", "X", null],
+          [null, "X", "D", "O", "T", "T", "O", "X", null],
+          [null, "A", "X", "X", "X", "X", "X", "X", null],
+          [null, "X", "I", "N", "S", "E", "G", "N", "A"],
+          [null, "V", "X", "X", "X", "X", "X", "X", null],
+          [null, "I", "N", "G", "E", "N", "N", "E", "X"],
+          [null, "O", "X", "X", "X", "X", "X", "X", null],
+          [null, null, null, null, null, null, null, null, null]
+        ]
+      },
+      hobbies: {
+        grid: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "C",  "A",  "L",  "C",  "I",  "O",  null],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "P",  "I",  "T",  "T",  "U",  "R",  "A"],
+          [null, "",   "",   "",   "",   "",   "",   "",   null],
+          [null, "",   "M",  "U",  "S",  "I",  "C",  "A",  null],
+          [null, "",   "L",  "E",  "T",  "T",  "U",  "R",  "A"],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        numbers: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, 1,    null, null, 2,    null, null, 3,    null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 4,    null, null, null, null, null, null, null],
+          [null, null, null, null, 5,    null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, 6,    null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null]
+        ],
+        clues: {
+          across: [
+            { number: 2, clue: "Popular team sport", answer: "calcio" },
+            { number: 5, clue: "Art of painting", answer: "pittura" }
+          ],
+          down: [
+            { number: 1, clue: "Musical sound", answer: "musica" },
+            { number: 6, clue: "Reading material", answer: "lettura" }
+          ]
+        },
+        solution: [
+          [null, null, null, null, null, null, null, null, null],
+          [null, "M", "U", "S", "I", "C", "A", "X", null],
+          [null, "X", "C", "A", "L", "C", "I", "O", null],
+          [null, "L", "X", "X", "X", "X", "X", "X", null],
+          [null, "X", "P", "I", "T", "T", "U", "R", "A"],
+          [null, "X", "X", "X", "X", "X", "X", "X", null],
+          [null, "L", "E", "T", "T", "U", "R", "A", null],
+          [null, "X", "X", "X", "X", "X", "X", "X", null],
+          [null, null, null, null, null, null, null, null, null]
+        ]
+      }
+    };
+    
+    let currentPuzzle = null;
+    
+    function startGame() {
+      const selectedCategory = document.getElementById("categorySelect").value;
+      if (!(selectedCategory in puzzles)) {
+        alert("Puzzle for this category is not available yet.");
+        return;
+      }
+      currentPuzzle = puzzles[selectedCategory];
+      document.getElementById("categorySelection").style.display = "none";
+      document.getElementById("crosswordGame").style.display = "block";
+      document.getElementById("gameTitle").innerText = "Crossword: " + selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+      setupPuzzle();
+      displayClues();
+    }
+    
+    function setupPuzzle() {
+      const container = document.getElementById("puzzleContainer");
+      container.innerHTML = "";
+      const grid = currentPuzzle.grid;
+      const numbers = currentPuzzle.numbers;
+      const table = document.createElement("table");
+      table.classList.add("crossword");
+      for (let i = 0; i < grid.length; i++) {
+        const row = document.createElement("tr");
+        for (let j = 0; j < grid[i].length; j++) {
+          const cell = document.createElement("td");
+          if (grid[i][j] === null) {
+            cell.classList.add("black");
+          } else {
+            cell.classList.add("white");
+            if (numbers[i][j] !== null) {
+              const numSpan = document.createElement("span");
+              numSpan.classList.add("number");
+              numSpan.innerText = numbers[i][j];
+              cell.appendChild(numSpan);
+            }
+            const input = document.createElement("input");
+            input.setAttribute("maxlength", "1");
+            input.setAttribute("data-row", i);
+            input.setAttribute("data-col", j);
+            cell.appendChild(input);
+          }
+          row.appendChild(cell);
+        }
+        table.appendChild(row);
+      }
+      container.appendChild(table);
+    }
+    
+    function displayClues() {
+      const acrossDiv = document.getElementById("acrossClues");
+      const downDiv = document.getElementById("downClues");
+      acrossDiv.innerHTML = "<h4>Across</h4>";
+      downDiv.innerHTML = "<h4>Down</h4>";
+      currentPuzzle.clues.across.forEach(clue => {
+        const p = document.createElement("p");
+        p.innerText = clue.number + ". " + clue.clue;
+        acrossDiv.appendChild(p);
+      });
+      currentPuzzle.clues.down.forEach(clue => {
+        const p = document.createElement("p");
+        p.innerText = clue.number + ". " + clue.clue;
+        downDiv.appendChild(p);
+      });
+    }
+    
+    function checkPuzzle() {
+      const grid = currentPuzzle.solution;
+      let allCorrect = true;
+      const table = document.querySelector("table.crossword");
+      for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+          if (grid[i][j] === null) continue;
+          const cell = table.rows[i].cells[j];
+          const input = cell.querySelector("input");
+          if (!input) continue;
+          if (input.value.trim().toUpperCase() !== grid[i][j]) {
+            allCorrect = false;
+            input.style.border = "2px solid red";
+          } else {
+            input.style.border = "2px solid green";
+          }
+        }
+      }
+      const feedback = document.getElementById("gameFeedback");
+      if (allCorrect) {
+        feedback.innerText = "Congratulations! All answers are correct.";
+      } else {
+        feedback.innerText = "Some answers are incorrect. Please try again.";
+      }
+    }
+    
+    function goBack() {
+      document.getElementById("crosswordGame").style.display = "none";
+      document.getElementById("categorySelection").style.display = "block";
+    }
+  </script>
+</body>
+</html>

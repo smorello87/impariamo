@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dropdown Arrow Fix Test - Impariamo l'Italiano!</title>
+  <!-- CSS loaded dynamically to prevent caching -->
+  <script src="js/css-loader.js"></script>
+  <style>
+    /* Test visibility helper */
+    .test-section {
+      background: #f0f0f0;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
+    .test-section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #008C45;
+      padding-bottom: 10px;
+    }
+    .test-section ul {
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+    .test-section li {
+      margin: 8px 0;
+    }
+    .success {
+      color: #008C45;
+      font-weight: bold;
+    }
+    .fix-applied {
+      background: #e8f5e9;
+      padding: 15px;
+      border-left: 4px solid #008C45;
+      margin: 20px 0;
+    }
+    .fix-applied h3 {
+      color: #008C45;
+      margin-bottom: 10px;
+    }
+    .code-snippet {
+      background: #263238;
+      color: #aed581;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dropdown Arrow Fix Test</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html">Verb Tenses</a>
+          <a href="reflexives.html">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html">Memory Game</a>
+      <a href="wordle.html">Wordle</a>
+      <div class="dropdown">
+        <a href="#">More Games</a>
+        <div class="dropdown-content">
+          <a href="crosswords.html">Crosswords</a>
+          <a href="fiore.html">Fiore</a>
+          <a href="deep.html">Deep Learning</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+
+  <main class="container">
+    <div class="test-section">
+      <h2>✅ Dropdown Arrow Fix Applied</h2>
+
+      <div class="fix-applied">
+        <h3>What was causing the duplicate arrows?</h3>
+        <p>The navigation dropdowns were missing explicit arrow styling, which could cause browsers to render default indicators or create visual conflicts with other CSS rules.</p>
+      </div>
+
+      <div class="fix-applied">
+        <h3>What was fixed?</h3>
+        <ul>
+          <li class="success">✓ Added a single, consistent dropdown arrow using CSS ::after pseudo-element</li>
+          <li class="success">✓ Arrow uses the ▼ character with proper sizing (10px)</li>
+          <li class="success">✓ Arrow rotates 180° on hover for visual feedback</li>
+          <li class="success">✓ Mobile view: Arrow rotates sideways for better mobile UX</li>
+          <li class="success">✓ Arrow styling is consistent with Italian theme design</li>
+        </ul>
+      </div>
+
+      <div class="fix-applied">
+        <h3>CSS Changes Made:</h3>
+        <div class="code-snippet">
+/* Add single dropdown arrow indicator */<br>
+nav .dropdown > a::after {<br>
+&nbsp;&nbsp;content: '▼';<br>
+&nbsp;&nbsp;font-size: 10px;<br>
+&nbsp;&nbsp;margin-left: 5px;<br>
+&nbsp;&nbsp;opacity: 0.8;<br>
+&nbsp;&nbsp;transition: transform var(--transition-fast);<br>
+&nbsp;&nbsp;display: inline-block;<br>
+}<br><br>
+/* Rotate on hover */<br>
+nav .dropdown:hover > a::after {<br>
+&nbsp;&nbsp;transform: rotate(180deg);<br>
+}
+        </div>
+      </div>
+
+      <h2 style="margin-top: 30px;">Test the Fix:</h2>
+      <ol>
+        <li>Look at "Spin the Wheel" and "More Games" in the navigation above</li>
+        <li>You should see <strong>only ONE arrow</strong> next to each dropdown menu</li>
+        <li>Hover over the dropdown - the arrow should rotate upward</li>
+        <li>The arrow should be small, subtle, and match the navigation style</li>
+        <li>On mobile (resize window to &lt;600px), arrows should point sideways</li>
+      </ol>
+
+      <p style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107;">
+        <strong>Note:</strong> This test page can be deleted after verifying the dropdown arrows display correctly.
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <p>Test Page - Dropdown Arrow Fix</p>
+  </footer>
+</body>
+</html>

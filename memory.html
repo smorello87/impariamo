@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impariamo l'Italiano! - Memory Game</title>
+  <link rel="stylesheet" href="css/styles-v2.css">
+  <link rel="stylesheet" href="css/games-v2.css">
+  <style>
+    /* Memory Game specific overrides */
+    .game-section {
+      text-align: center;
+      margin: var(--spacing-lg) 0;
+    }
+    #feedback {
+      margin: var(--spacing-lg) 0;
+      font-size: var(--font-size-large);
+      font-weight: var(--font-weight-bold);
+      min-height: 30px;
+    }
+    #feedback.success {
+      color: var(--color-italian-green);
+    }
+    #feedback.error {
+      color: var(--color-italian-red);
+    }
+    #attempts {
+      font-size: var(--font-size-large);
+      color: var(--color-italian-green);
+      font-weight: var(--font-weight-bold);
+    }
+  </style>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJL9EQGT3Y');
+</script>
+</head>
+<body>
+  <header>
+    <h1>Impariamo l'Italiano!</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html">Verb Tenses</a>
+          <a href="reflexives.html">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html" class="active" aria-current="page">Memory Game</a>
+      <a href="wordle.html">Wordle</a>
+      <a href="fiore.html">Fiore</a>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+  <main class="container">
+    <!-- Topic Selection Section -->
+    <section id="topicSelection" class="game-section">
+      <h2>Select a Topic</h2>
+      <select id="topicSelect">
+        <option value="food">Food</option>
+        <option value="daily">Daily Activities</option>
+        <option value="family">Family</option>
+        <option value="school">School</option>
+        <option value="work">Work</option>
+      </select>
+      <br>
+      <button onclick="startGame()">Start Game</button>
+    </section>
+
+    <!-- Memory Game Section -->
+    <section id="memoryGame" class="game-section" style="display:none;">
+      <h2 id="gameTitle"></h2>
+      <div id="board" class="memory-board"></div>
+      <button onclick="goBack()">Change Topic</button>
+      <div id="gameFeedback" style="margin-top: 20px; font-weight: bold;"></div>
+    </section>
+  </main>
+  <footer>
+    <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://beatricecarnelutti.com/impariamo">Impariamo l'Italiano!</a> by <span property="cc:attributionName">Beatrice Carnelutti</span> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a>
+     </footer>
+  <script>
+    // Word pairs for each topic (Italian : English)
+    const topics = {
+  food: [
+    { italian: "pane",        english: "bread"      },
+    { italian: "latte",       english: "milk"       },
+    { italian: "formaggio",   english: "cheese"     },
+    { italian: "pomodoro",    english: "tomato"     },
+    { italian: "mele",        english: "apples"     },
+    { italian: "acqua",       english: "water"      },
+    { italian: "burro",       english: "butter"     },
+    { italian: "uova",        english: "eggs"       },
+    { italian: "carne",       english: "meat"       },
+    { italian: "pesce",       english: "fish"       },
+    { italian: "riso",        english: "rice"       },
+    { italian: "pasta",       english: "pasta"      },
+    { italian: "zucchero",    english: "sugar"      },
+    { italian: "sale",        english: "salt"       }
+  ],
+  daily: [
+    { italian: "svegliarsi",       english: "to wake up"         },
+    { italian: "fare colazione",   english: "to have breakfast"  },
+    { italian: "andare al lavoro",  english: "to go to work"      },
+    { italian: "tornare a casa",   english: "to return home"     },
+    { italian: "dormire",          english: "to sleep"           },
+    { italian: "mangiare",         english: "to eat"             },
+    { italian: "correre",        english: "to run"   },
+    { italian: "leggere",         english: "to read"     },
+    { italian: "camminare",          english: "to walk"    },
+    { italian: "fare la doccia",   english: "to take a shower"   },
+    { italian: "guidare",          english: "to drive"           },
+    { italian: "fare esercizio",   english: "to exercise"        },
+    { italian: "guardare la TV",   english: "to watch TV"        },
+    { italian: "leggere",          english: "to read"            }
+  ],
+  family: [
+    { italian: "madre",        english: "mother"          },
+    { italian: "padre",        english: "father"          },
+    { italian: "fratello",     english: "brother"         },
+    { italian: "sorella",      english: "sister"          },
+    { italian: "nonno",        english: "grandfather"     },
+    { italian: "nonna",        english: "grandmother"     },
+    { italian: "zio",          english: "uncle"           },
+    { italian: "zia",          english: "aunt"            },
+    { italian: "cugino",       english: "cousin (m)"      },
+    { italian: "cugina",       english: "cousin (f)"      },
+    { italian: "figlio",       english: "son"             },
+    { italian: "figlia",       english: "daughter"        },
+    { italian: "nipote",       english: "nephew/niece"    },
+    { italian: "figli",        english: "children"        }
+  ],
+  school: [
+    { italian: "scuola",        english: "school"        },
+    { italian: "professore",    english: "teacher"       },
+    { italian: "studente",      english: "student"       },
+    { italian: "libro",         english: "book"          },
+    { italian: "compito",       english: "homework"      },
+    { italian: "lezione",       english: "lesson"        },
+    { italian: "esame",         english: "exam"          },
+    { italian: "aula",          english: "classroom"     },
+    { italian: "matita",        english: "pencil"        },
+    { italian: "penna",         english: "pen"           },
+    { italian: "zaino",         english: "backpack"      },
+    { italian: "lavagna",       english: "blackboard"    },
+    { italian: "compagno di classe", english: "classmate" },
+    { italian: "università",    english: "university"    }
+  ],
+  work: [
+    { italian: "ufficio",      english: "office"        },
+    { italian: "lavorare",     english: "to work"       },
+    { italian: "capo",         english: "boss"          },
+    { italian: "riunione",     english: "meeting"       },
+    { italian: "stipendio",    english: "salary"        },
+    { italian: "collega",      english: "colleague"     },
+    { italian: "pausa",        english: "break"         },
+    { italian: "cliente",      english: "client"        },
+    { italian: "contratto",    english: "contract"      },
+    { italian: "progetto",     english: "project"       },
+    { italian: "presentazione",english: "presentation"  },
+    { italian: "scrivania",    english: "desk"          },
+    { italian: "posta elettronica",        english: "email"         },
+    { italian: "orario",       english: "schedule"      }
+  ]
+};
+
+    let cards = [];
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let matchesFound = 0;
+    let totalMatches = 0;
+    let selectedTopic = "";
+
+    function startGame() {
+      selectedTopic = document.getElementById("topicSelect").value;
+      document.getElementById("topicSelection").style.display = "none";
+      document.getElementById("memoryGame").style.display = "block";
+      document.getElementById("gameTitle").innerText = "Memory Game: " + selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1);
+      setupBoard();
+    }
+
+    function setupBoard() {
+      const boardDiv = document.getElementById("board");
+      boardDiv.innerHTML = "";
+      cards = [];
+      matchesFound = 0;
+      const pairs = topics[selectedTopic];
+      totalMatches = pairs.length;
+      pairs.forEach((pair, index) => {
+        const id = index;
+        cards.push({ id: id, text: pair.italian, flipped: false, matched: false });
+        cards.push({ id: id, text: pair.english, flipped: false, matched: false });
+      });
+      cards = shuffle(cards);
+      cards.forEach((card, index) => {
+        const cardDiv = document.createElement("div");
+        cardDiv.classList.add("card");
+        cardDiv.setAttribute("data-index", index);
+        cardDiv.innerText = index + 1;               // ← show backside number
+        cardDiv.addEventListener("click", onCardClick);
+        boardDiv.appendChild(cardDiv);
+      });
+    }
+
+    function onCardClick(e) {
+      if (lockBoard) return;
+      const cardDiv = e.currentTarget;
+      const index = cardDiv.getAttribute("data-index");
+      const card = cards[index];
+      if (card.flipped || card.matched) return;
+      flipCard(cardDiv, card);
+      if (!firstCard) {
+        firstCard = { card, cardDiv };
+      } else {
+        secondCard = { card, cardDiv };
+        lockBoard = true;
+        setTimeout(checkForMatch, 1000);
+      }
+    }
+
+    function flipCard(cardDiv, card) {
+      card.flipped = true;
+      cardDiv.innerText = card.text;
+      cardDiv.classList.add("flipped");
+    }
+
+    function unflipCard(cardDiv, card) {
+      card.flipped = false;
+      // restore the backside number
+      const idx = parseInt(cardDiv.getAttribute("data-index"), 10);
+      cardDiv.innerText = idx + 1;                  // ← restore number
+      cardDiv.classList.remove("flipped");
+    }
+
+    function checkForMatch() {
+      if (firstCard.card.id === secondCard.card.id) {
+        firstCard.card.matched = true;
+        secondCard.card.matched = true;
+        firstCard.cardDiv.classList.add("matched");
+        secondCard.cardDiv.classList.add("matched");
+        matchesFound++;
+        if (matchesFound === totalMatches) {
+          document.getElementById("gameFeedback").innerText = "Congratulations! You found all matches.";
+        }
+      } else {
+        unflipCard(firstCard.cardDiv, firstCard.card);
+        unflipCard(secondCard.cardDiv, secondCard.card);
+      }
+      firstCard = null;
+      secondCard = null;
+      lockBoard = false;
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function goBack() {
+      document.getElementById("memoryGame").style.display = "none";
+      document.getElementById("topicSelection").style.display = "block";
+    }
+  </script>
+</body>
+</html>

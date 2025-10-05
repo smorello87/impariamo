@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impariamo l'Italiano! - Spin the Wheel (Verbi Riflessivi)</title>
+  <!-- CSS loaded dynamically to prevent caching -->
+  <script src="js/css-loader.js"></script>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJL9EQGT3Y');
+</script>
+</head>
+<body>
+  <header>
+    <h1>Impariamo l'Italiano!</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html">Verb Tenses</a>
+          <a href="reflexives.html"  class="active" aria-current="page">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html">Memory Game</a>
+      <a href="wordle.html">Wordle</a>
+      <a href="fiore.html">Fiore</a>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+  <main class="container">
+    <!-- Verb Tense Selection -->
+    <section id="tenseSelection" class="game-section">
+      <h2>Select a Verb Tense or Type</h2>
+      <select id="verbTenseSelect">
+        <option value="presente indicativo">Presente Indicativo</option>
+        <option value="passato prossimo">Passato Prossimo</option>
+        <option value="imperfetto">Imperfetto</option>
+        <option value="futuro">Futuro</option>
+      </select>
+      <br>
+      <button onclick="startGame()">Start Game</button>
+    </section>
+
+    <!-- Spin the Wheel Game Section -->
+    <section id="spin" class="game-section" style="display:none;">
+      <h2 id="gameTitle"></h2>
+      <canvas id="wheelCanvas" width="500" height="500"></canvas>
+      <button onclick="spinWheel()">Spin!</button>
+      <div id="spinResult" style="margin-top: 20px; font-size: 18px;"></div>
+      <div id="conjugationInput" style="margin-top:20px; display:none;">
+        <input type="text" id="userConjugation" placeholder="Enter your conjugation">
+        <button onclick="checkConjugation()">Submit</button>
+      </div>
+      <div id="spinFeedback" style="margin-top:10px; font-weight: bold;"></div>
+      <button onclick="goBack()">Change Tense</button>
+    </section>
+  </main>
+
+  <footer>
+    <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://beatricecarnelutti.com/impariamo">Impariamo l'Italiano!</a> by <span property="cc:attributionName">Beatrice Carnelutti</span> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a>
+     </footer>
+
+  <script>
+    // Global variable for the selected verb tense/type
+    let selectedTense = "";
+
+    // --------------------------
+    // Conjugation Dictionaries for Reflexive Verbs
+    // --------------------------
+    // Presente Indicativo
+    const conjugationsPresente = {
+      "alzarsi":      { "io": "mi alzo",       "tu": "ti alzi",       "lui/lei": "si alza",      "noi": "ci alziamo",   "voi": "vi alzate",    "loro": "si alzano" },
+      "svegliarsi":   { "io": "mi sveglio",    "tu": "ti svegli",     "lui/lei": "si sveglia",   "noi": "ci svegliamo", "voi": "vi svegliate", "loro": "si svegliano" },
+      "truccarsi":    { "io": "mi trucco",     "tu": "ti trucchi",    "lui/lei": "si trucca",    "noi": "ci trucchiamo", "voi": "vi truccate", "loro": "si truccano" },
+      "lavarsi":      { "io": "mi lavo",       "tu": "ti lavi",       "lui/lei": "si lava",      "noi": "ci laviamo",   "voi": "vi lavate",    "loro": "si lavano" },
+      "addormentarsi":{ "io": "mi addormento", "tu": "ti addormenti", "lui/lei": "si addormenta","noi": "ci addormentiamo", "voi": "vi addormentate", "loro": "si addormentano" },
+      "radersi":      { "io": "mi rado",       "tu": "ti radi",       "lui/lei": "si rade",      "noi": "ci radiamo",   "voi": "vi radiate",   "loro": "si radono" },
+      "laurearsi":    { "io": "mi laureo",     "tu": "ti laurei",     "lui/lei": "si laurea",    "noi": "ci laureiamo", "voi": "vi laureate",  "loro": "si laureano" },
+      "diplomarsi":   { "io": "mi diploma",    "tu": "ti diplomi",    "lui/lei": "si diploma",   "noi": "ci diplomiamo", "voi": "vi diplomate", "loro": "si diplomano" },
+      "impegnarsi":   { "io": "mi impegno",    "tu": "ti impegni",    "lui/lei": "si impegna",   "noi": "ci impegniamo", "voi": "vi impegnate", "loro": "si impegnano" },
+      "allenarsi":    { "io": "mi alleno",     "tu": "ti alleni",     "lui/lei": "si allena",    "noi": "ci alleniamo", "voi": "vi allenate",  "loro": "si allenano" },
+      "stancarsi":    { "io": "mi stanco",     "tu": "ti stanchi",    "lui/lei": "si stanca",    "noi": "ci stanchiamo", "voi": "vi stancate", "loro": "si stancano" },
+      "sedersi":      { "io": "mi siedo",      "tu": "ti siedi",      "lui/lei": "si siede",     "noi": "ci sediamo",  "voi": "vi sedete",    "loro": "si siedono" },
+      "bagnarsi":     { "io": "mi bagno",      "tu": "ti bagni",      "lui/lei": "si bagna",     "noi": "ci bagniamo",  "voi": "vi bagnate",  "loro": "si bagnano" },
+      "pettinarsi":   { "io": "mi pettino",    "tu": "ti pettini",    "lui/lei": "si pettina",   "noi": "ci pettiniamo", "voi": "vi pettinate", "loro": "si pettinano" },
+      "vergognarsi":  { "io": "mi vergogno",   "tu": "ti vergogni",   "lui/lei": "si vergogna",  "noi": "ci vergogniamo", "voi": "vi vergognate", "loro": "si vergognano" },
+      "spogliarsi":   { "io": "mi spoglio",    "tu": "ti spogli",     "lui/lei": "si spoglia",   "noi": "ci spogliamo", "voi": "vi spogliate", "loro": "si spogliano" },
+      "sbrigarsi":    { "io": "mi sbrigo",     "tu": "ti sbrighi",    "lui/lei": "si sbriga",    "noi": "ci sbrighiamo", "voi": "vi sbrighate", "loro": "si sbrigano" },
+      "fermarsi":     { "io": "mi fermo",      "tu": "ti fermi",      "lui/lei": "si ferma",     "noi": "ci fermiamo",  "voi": "vi fermate",  "loro": "si fermano" },
+      "abituarsi":    { "io": "mi abituo",     "tu": "ti abitui",     "lui/lei": "si abitua",    "noi": "ci abituamo",  "voi": "vi abituate", "loro": "si abituano" },
+      "ubriacarsi":   { "io": "mi ubriaco",    "tu": "ti ubriaci",    "lui/lei": "si ubriaca",   "noi": "ci ubriacamo", "voi": "vi ubriacate", "loro": "si ubriacano" },
+      "spazzolarsi":  { "io": "mi spazzolo",   "tu": "ti spazzoli",   "lui/lei": "si spazzola",  "noi": "ci spazzoliamo", "voi": "vi spazzolate", "loro": "si spazzolano" },
+      "sdraiarsi":    { "io": "mi sdraio",     "tu": "ti sdrai",      "lui/lei": "si sdraia",    "noi": "ci sdraiamo",  "voi": "vi sdraiate", "loro": "si sdraiano" },
+      "chiamarsi":    { "io": "mi chiamo",     "tu": "ti chiami",     "lui/lei": "si chiama",    "noi": "ci chiamiamo", "voi": "vi chiamate",  "loro": "si chiamano" },
+      "rilassarsi":   { "io": "mi rilasso",    "tu": "ti rilassi",    "lui/lei": "si rilassa",   "noi": "ci rilassiamo", "voi": "vi rilassate", "loro": "si rilassano" },
+      "riposarsi":    { "io": "mi riposo",     "tu": "ti riposi",     "lui/lei": "si riposa",    "noi": "ci riposiamo", "voi": "vi riposate",  "loro": "si riposano" },
+      "divertirsi":   { "io": "mi diverto",    "tu": "ti diverti",    "lui/lei": "si diverte",   "noi": "ci divertiamo", "voi": "vi divertite", "loro": "si divertono" },
+      "avvicinarsi":  { "io": "mi avvicino",   "tu": "ti avvicini",   "lui/lei": "si avvicina",  "noi": "ci avviciniamo", "voi": "vi avvicinate", "loro": "si avvicinano" },
+      "abbronzarsi":  { "io": "mi abbronzo",   "tu": "ti abbronzati", "lui/lei": "si abbronza",   "noi": "ci abbronzamo", "voi": "vi abbronzate", "loro": "si abbronzano" },
+      "prepararsi":   { "io": "mi preparo",    "tu": "ti prepari",    "lui/lei": "si prepara",   "noi": "ci prepariamo", "voi": "vi preparate", "loro": "si preparano" }
+    };
+
+    // Passato Prossimo (using "essere" as auxiliary; note the slash for gender variants)
+    const conjugationsPassato = {
+      "alzarsi":      { "io": "mi sono alzato/a",       "tu": "ti sei alzato/a",       "lui/lei": "si è alzato/a",      "noi": "ci siamo alzati/e",   "voi": "vi siete alzati/e",    "loro": "si sono alzati/e" },
+      "svegliarsi":   { "io": "mi sono svegliato/a",    "tu": "ti sei svegliato/a",    "lui/lei": "si è svegliato/a",   "noi": "ci siamo svegliati/e", "voi": "vi siete svegliati/e", "loro": "si sono svegliati/e" },
+      "truccarsi":    { "io": "mi sono truccato/a",     "tu": "ti sei truccato/a",     "lui/lei": "si è truccato/a",    "noi": "ci siamo truccati/e", "voi": "vi siete truccati/e", "loro": "si sono truccati/e" },
+      "lavarsi":      { "io": "mi sono lavato/a",       "tu": "ti sei lavato/a",       "lui/lei": "si è lavato/a",      "noi": "ci siamo lavati/e",   "voi": "vi siete lavati/e",    "loro": "si sono lavati/e" },
+      "addormentarsi":{ "io": "mi sono addormentato/a", "tu": "ti sei addormentato/a", "lui/lei": "si è addormentato/a","noi": "ci siamo addormentati/e", "voi": "vi siete addormentati/e", "loro": "si sono addormentati/e" },
+      "radersi":      { "io": "mi sono rasato/a",       "tu": "ti sei rasato/a",       "lui/lei": "si è rasato/a",      "noi": "ci siamo rasati/e",   "voi": "vi siete rasati/e",    "loro": "si sono rasati/e" },
+      "laurearsi":    { "io": "mi sono laureato/a",     "tu": "ti sei laureato/a",     "lui/lei": "si è laureato/a",    "noi": "ci siamo laureati/e", "voi": "vi siete laureati/e", "loro": "si sono laureati/e" },
+      "diplomarsi":   { "io": "mi sono diplomato/a",    "tu": "ti sei diplomato/a",    "lui/lei": "si è diplomato/a",   "noi": "ci siamo diplomati/e", "voi": "vi siete diplomati/e", "loro": "si sono diplomati/e" },
+      "impegnarsi":   { "io": "mi sono impegnato/a",    "tu": "ti sei impegnato/a",    "lui/lei": "si è impegnato/a",   "noi": "ci siamo impegnati/e", "voi": "vi siete impegnati/e", "loro": "si sono impegnati/e" },
+      "allenarsi":    { "io": "mi sono allenato/a",     "tu": "ti sei allenato/a",     "lui/lei": "si è allenato/a",    "noi": "ci siamo allenati/e", "voi": "vi siete allenati/e", "loro": "si sono allenati/e" },
+      "stancarsi":    { "io": "mi sono stancato/a",     "tu": "ti sei stancato/a",     "lui/lei": "si è stancato/a",    "noi": "ci siamo stancati/e", "voi": "vi siete stancati/e", "loro": "si sono stancati/e" },
+      "sedersi":      { "io": "mi sono seduto/a",      "tu": "ti sei seduto/a",      "lui/lei": "si è seduto/a",     "noi": "ci siamo seduti/e",  "voi": "vi siete seduti/e",   "loro": "si sono seduti/e" },
+      "bagnarsi":     { "io": "mi sono bagnato/a",      "tu": "ti sei bagnato/a",      "lui/lei": "si è bagnato/a",     "noi": "ci siamo bagnati/e",  "voi": "vi siete bagnati/e",  "loro": "si sono bagnati/e" },
+      "pettinarsi":   { "io": "mi sono pettinato/a",    "tu": "ti sei pettinato/a",    "lui/lei": "si è pettinato/a",   "noi": "ci siamo pettinati/e", "voi": "vi siete pettinati/e", "loro": "si sono pettinati/e" },
+      "vergognarsi":  { "io": "mi sono vergognato/a",   "tu": "ti sei vergognato/a",   "lui/lei": "si è vergognato/a",  "noi": "ci siamo vergognati/e", "voi": "vi siete vergognati/e", "loro": "si sono vergognati/e" },
+      "spogliarsi":   { "io": "mi sono spogliato/a",    "tu": "ti sei spogliato/a",    "lui/lei": "si è spogliato/a",   "noi": "ci siamo spogliati/e", "voi": "vi siete spogliati/e", "loro": "si sono spogliati/e" },
+      "sbrigarsi":    { "io": "mi sono sbrigato/a",     "tu": "ti sei sbrigato/a",     "lui/lei": "si è sbrigato/a",    "noi": "ci siamo sbrigati/e", "voi": "vi siete sbrigati/e", "loro": "si sono sbrigati/e" },
+      "fermarsi":     { "io": "mi sono fermato/a",      "tu": "ti sei fermato/a",      "lui/lei": "si è fermato/a",     "noi": "ci siamo fermati/e",  "voi": "vi siete fermati/e",  "loro": "si sono fermati/e" },
+      "abituarsi":    { "io": "mi sono abituato/a",     "tu": "ti sei abituato/a",     "lui/lei": "si è abituato/a",    "noi": "ci siamo abituati/e", "voi": "vi siete abituati/e", "loro": "si sono abituati/e" },
+      "ubriacarsi":   { "io": "mi sono ubriacato/a",    "tu": "ti sei ubriacato/a",    "lui/lei": "si è ubriacato/a",   "noi": "ci siamo ubriacati/e", "voi": "vi siete ubriacati/e", "loro": "si sono ubriacati/e" },
+      "spazzolarsi":  { "io": "mi sono spazzolato/a",   "tu": "ti sei spazzolato/a",   "lui/lei": "si è spazzolato/a",  "noi": "ci siamo spazzolati/e", "voi": "vi siete spazzolati/e", "loro": "si sono spazzolati/e" },
+      "sdraiarsi":    { "io": "mi sono sdraiato/a",     "tu": "ti sei sdraiato/a",     "lui/lei": "si è sdraiato/a",    "noi": "ci siamo sdraiati/e",  "voi": "vi siete sdraiati/e",  "loro": "si sono sdraiati/e" },
+      "chiamarsi":    { "io": "mi sono chiamato/a",     "tu": "ti sei chiamato/a",     "lui/lei": "si è chiamato/a",    "noi": "ci siamo chiamati/e",  "voi": "vi siete chiamati/e",  "loro": "si sono chiamati/e" },
+      "rilassarsi":   { "io": "mi sono rilassato/a",    "tu": "ti sei rilassato/a",    "lui/lei": "si è rilassato/a",   "noi": "ci siamo rilassati/e", "voi": "vi siete rilassati/e", "loro": "si sono rilassati/e" },
+      "riposarsi":    { "io": "mi sono riposato/a",     "tu": "ti sei riposato/a",     "lui/lei": "si è riposato/a",    "noi": "ci siamo riposati/e",  "voi": "vi siete riposati/e",  "loro": "si sono riposati/e" },
+      "divertirsi":   { "io": "mi sono divertito/a",    "tu": "ti sei divertito/a",    "lui/lei": "si è divertito/a",   "noi": "ci siamo divertiti/e", "voi": "vi siete divertiti/e", "loro": "si sono divertiti/e" },
+      "avvicinarsi":  { "io": "mi sono avvicinato/a",   "tu": "ti sei avvicinato/a",   "lui/lei": "si è avvicinato/a",  "noi": "ci siamo avvicinati/e", "voi": "vi siete avvicinati/e", "loro": "si sono avvicinati/e" },
+      "abbronzarsi":  { "io": "mi sono abbronzato/a",   "tu": "ti sei abbronzato/a",   "lui/lei": "si è abbronzato/a",  "noi": "ci siamo abbronzati/e", "voi": "vi siete abbronzati/e", "loro": "si sono abbronzati/e" },
+      "prepararsi":   { "io": "mi sono preparato/a",    "tu": "ti sei preparato/a",    "lui/lei": "si è preparato/a",   "noi": "ci siamo preparati/e", "voi": "vi siete preparati/e", "loro": "si sono preparati/e" }
+    };
+
+    // Imperfetto
+    const conjugationsImperfetto = {
+      "alzarsi":      { "io": "mi alzavo",       "tu": "ti alzavi",       "lui/lei": "si alzava",      "noi": "ci alzavamo",   "voi": "vi alzavate",    "loro": "si alzavano" },
+      "svegliarsi":   { "io": "mi svegliavo",    "tu": "ti svegliavi",    "lui/lei": "si svegliava",   "noi": "ci svegliavamo", "voi": "vi svegliavate", "loro": "si svegliavano" },
+      "truccarsi":    { "io": "mi truccavo",     "tu": "ti truccavi",     "lui/lei": "si truccava",    "noi": "ci truccavamo", "voi": "vi truccavate",  "loro": "si truccavano" },
+      "lavarsi":      { "io": "mi lavavo",       "tu": "ti lavavi",       "lui/lei": "si lavava",      "noi": "ci lavavamo",   "voi": "vi lavavate",    "loro": "si lavavano" },
+      "addormentarsi":{ "io": "mi addormentavo", "tu": "ti addormentavi", "lui/lei": "si addormentava","noi": "ci addormentavamo", "voi": "vi addormentavate", "loro": "si addormentavano" },
+      "radersi":      { "io": "mi rasavo",       "tu": "ti rasavi",       "lui/lei": "si rasava",      "noi": "ci rasavamo",   "voi": "vi rasavate",    "loro": "si rasavano" },
+      "laurearsi":    { "io": "mi laureavo",     "tu": "ti laureavi",     "lui/lei": "si laureava",    "noi": "ci laureavamo", "voi": "vi laureavate",  "loro": "si laureavano" },
+      "diplomarsi":   { "io": "mi diplomavo",    "tu": "ti diplomavi",    "lui/lei": "si diplomava",   "noi": "ci diplomavamo", "voi": "vi diplomavate", "loro": "si diplomavano" },
+      "impegnarsi":   { "io": "mi impegnavo",    "tu": "ti impegnavi",    "lui/lei": "si impegnava",   "noi": "ci impegnavamo", "voi": "vi impegnavate", "loro": "si impegnavano" },
+      "allenarsi":    { "io": "mi allenavo",     "tu": "ti allenavi",     "lui/lei": "si allenava",    "noi": "ci allenavamo", "voi": "vi allenavate",  "loro": "si allenavano" },
+      "stancarsi":    { "io": "mi stancavo",     "tu": "ti stancavi",     "lui/lei": "si stancava",    "noi": "ci stancavamo", "voi": "vi stancavate",  "loro": "si stancavano" },
+      "sedersi":      { "io": "mi sedevo",       "tu": "ti sedevi",       "lui/lei": "si sedeva",      "noi": "ci sedevamo",   "voi": "vi sedevate",    "loro": "si sedevano" },
+      "bagnarsi":     { "io": "mi bagnavo",      "tu": "ti bagnavi",      "lui/lei": "si bagnava",     "noi": "ci bagnavamo",  "voi": "vi bagnavate",   "loro": "si bagnavano" },
+      "pettinarsi":   { "io": "mi pettinavo",    "tu": "ti pettinavi",    "lui/lei": "si pettinava",   "noi": "ci pettinavamo", "voi": "vi pettinavate", "loro": "si pettinavano" },
+      "vergognarsi":  { "io": "mi vergognavo",   "tu": "ti vergognavi",   "lui/lei": "si vergognava",  "noi": "ci vergognavamo", "voi": "vi vergognavate", "loro": "si vergognavano" },
+      "spogliarsi":   { "io": "mi spogliavo",    "tu": "ti spogliavi",    "lui/lei": "si spogliava",   "noi": "ci spogliavamo", "voi": "vi spogliavate", "loro": "si spogliavano" },
+      "sbrigarsi":    { "io": "mi sbrigavo",     "tu": "ti sbrigavi",     "lui/lei": "si sbrigava",    "noi": "ci sbrigavamo", "voi": "vi sbrigavate",  "loro": "si sbrigavano" },
+      "fermarsi":     { "io": "mi fermavo",      "tu": "ti fermavi",      "lui/lei": "si fermava",     "noi": "ci fermavamo",  "voi": "vi fermavate",   "loro": "si fermavano" },
+      "abituarsi":    { "io": "mi abituavo",     "tu": "ti abituavi",     "lui/lei": "si abituava",    "noi": "ci abituavamo",  "voi": "vi abituavate",  "loro": "si abituavano" },
+      "ubriacarsi":   { "io": "mi ubriacavo",    "tu": "ti ubriacavi",    "lui/lei": "si ubriacava",   "noi": "ci ubriacavamo", "voi": "vi ubriacavate",  "loro": "si ubriacavano" },
+      "spazzolarsi":  { "io": "mi spazzolavo",   "tu": "ti spazzolavi",   "lui/lei": "si spazzolava",  "noi": "ci spazzolavamo", "voi": "vi spazzolavate", "loro": "si spazzolavano" },
+      "sdraiarsi":    { "io": "mi sdraiavo",     "tu": "ti sdraiavi",     "lui/lei": "si sdraiava",    "noi": "ci sdraiavamo",  "voi": "vi sdraiavate",  "loro": "si sdraiavano" },
+      "chiamarsi":    { "io": "mi chiamavo",     "tu": "ti chiamavi",     "lui/lei": "si chiamava",    "noi": "ci chiamavamo",  "voi": "vi chiamavate",  "loro": "si chiamavano" },
+      "rilassarsi":   { "io": "mi rilassavo",    "tu": "ti rilassavi",    "lui/lei": "si rilassava",   "noi": "ci rilassavamo", "voi": "vi rilassavate", "loro": "si rilassavano" },
+      "riposarsi":    { "io": "mi riposavo",     "tu": "ti riposavi",     "lui/lei": "si riposava",    "noi": "ci riposavamo",  "voi": "vi riposavate",  "loro": "si riposavano" },
+      "divertirsi":   { "io": "mi divertivo",    "tu": "ti divertivi",    "lui/lei": "si divertiva",   "noi": "ci divertivamo", "voi": "vi divertivate", "loro": "si divertivano" },
+      "avvicinarsi":  { "io": "mi avvicinavo",   "tu": "ti avvicinavi",   "lui/lei": "si avvicinava",  "noi": "ci avvicinavamo", "voi": "vi avvicinavate", "loro": "si avvicinavano" },
+      "abbronzarsi":  { "io": "mi abbronzavo",   "tu": "ti abbronzavi",   "lui/lei": "si abbronzava",  "noi": "ci abbronzavamo", "voi": "vi abbronzavate", "loro": "si abbronzavano" },
+      "prepararsi":   { "io": "mi preparavo",    "tu": "ti preparavi",    "lui/lei": "si preparava",   "noi": "ci preparavamo", "voi": "vi preparavate", "loro": "si preparavano" }
+    };
+
+    // Futuro
+    const conjugationsFuturo = {
+      "alzarsi":      { "io": "mi alzerò",       "tu": "ti alzerai",       "lui/lei": "si alzerà",      "noi": "ci alzeremo",   "voi": "vi alzerete",    "loro": "si alzeranno" },
+      "svegliarsi":   { "io": "mi sveglierò",    "tu": "ti sveglierai",    "lui/lei": "si sveglierà",   "noi": "ci sveglieremo", "voi": "vi sveglierete", "loro": "si sveglieranno" },
+      "truccarsi":    { "io": "mi truccerò",     "tu": "ti truccerai",     "lui/lei": "si truccerà",    "noi": "ci trucceremo",  "voi": "vi truccerete",  "loro": "si trucceranno" },
+      "lavarsi":      { "io": "mi laverò",       "tu": "ti laverai",       "lui/lei": "si laverà",      "noi": "ci laveremo",    "voi": "vi laverete",    "loro": "si laveranno" },
+      "addormentarsi":{ "io": "mi addormenterò", "tu": "ti addormenterai", "lui/lei": "si addormenterà", "noi": "ci addormenteremo", "voi": "vi addormenterete", "loro": "si addormenteranno" },
+      "radersi":      { "io": "mi raserò",       "tu": "ti raserai",       "lui/lei": "si raserà",      "noi": "ci raseremo",   "voi": "vi raserete",    "loro": "si raseranno" },
+      "laurearsi":    { "io": "mi laureerò",     "tu": "ti laureerai",     "lui/lei": "si laureerà",    "noi": "ci laureeremo",  "voi": "vi laureerete",  "loro": "si laureeranno" },
+      "diplomarsi":   { "io": "mi diplomerò",    "tu": "ti diplomerai",    "lui/lei": "si diplomerà",   "noi": "ci diplomeremo", "voi": "vi diplomerete", "loro": "si diplomeranno" },
+      "impegnarsi":   { "io": "mi impegnerò",    "tu": "ti impegnerai",    "lui/lei": "si impegnerà",   "noi": "ci impegneremo", "voi": "vi impegnerete", "loro": "si impegneranno" },
+      "allenarsi":    { "io": "mi allenerò",     "tu": "ti allenerai",     "lui/lei": "si allenerà",    "noi": "ci alleneremo",  "voi": "vi allenerete",  "loro": "si alleneranno" },
+      "stancarsi":    { "io": "mi stancherò",    "tu": "ti stancherai",    "lui/lei": "si stancherà",   "noi": "ci stancheremo", "voi": "vi stancherete", "loro": "si stancheranno" },
+      "sedersi":      { "io": "mi sederò",       "tu": "ti sederai",       "lui/lei": "si sederà",      "noi": "ci sederemo",   "voi": "vi sederete",    "loro": "si sederanno" },
+      "bagnarsi":     { "io": "mi bagnerò",      "tu": "ti bagnerai",      "lui/lei": "si bagnerà",     "noi": "ci bagneremo",  "voi": "vi bagnerete",   "loro": "si bagneranno" },
+      "pettinarsi":   { "io": "mi pettinerò",    "tu": "ti pettinerai",    "lui/lei": "si pettinerà",   "noi": "ci pettineremo", "voi": "vi pettinerete", "loro": "si pettineranno" },
+      "vergognarsi":  { "io": "mi vergognerò",   "tu": "ti vergognerai",   "lui/lei": "si vergognerà",  "noi": "ci vergogneremo", "voi": "vi vergognerete", "loro": "si vergogneranno" },
+      "spogliarsi":   { "io": "mi spoglierò",    "tu": "ti spoglierai",    "lui/lei": "si spoglierà",   "noi": "ci spoglieremo", "voi": "vi spoglierete", "loro": "si spoglieranno" },
+      "sbrigarsi":    { "io": "mi sbrigherò",    "tu": "ti sbrigherai",    "lui/lei": "si sbrigherà",   "noi": "ci sbrigheremo", "voi": "vi sbrigherete", "loro": "si sbrigheranno" },
+      "fermarsi":     { "io": "mi fermerò",      "tu": "ti fermerai",      "lui/lei": "si fermerà",     "noi": "ci fermeremo",   "voi": "vi fermerete",   "loro": "si fermeranno" },
+      "abituarsi":    { "io": "mi abituerò",     "tu": "ti abituerai",     "lui/lei": "si abituerà",    "noi": "ci abitueremo",  "voi": "vi abituerete",  "loro": "si abitueranno" },
+      "ubriacarsi":   { "io": "mi ubriacherò",   "tu": "ti ubriacherai",   "lui/lei": "si ubriacherà",  "noi": "ci ubriacheremo", "voi": "vi ubriacherete", "loro": "si ubriacheranno" },
+      "spazzolarsi":  { "io": "mi spazzolerò",   "tu": "ti spazzolerai",   "lui/lei": "si spazzolerà",  "noi": "ci spazzoleremo", "voi": "vi spazzolerete", "loro": "si spazzoleranno" },
+      "sdraiarsi":    { "io": "mi sdraierò",     "tu": "ti sdraierai",     "lui/lei": "si sdraierà",    "noi": "ci sdraieremo",  "voi": "vi sdraierete",  "loro": "si sdraieranno" },
+      "chiamarsi":    { "io": "mi chiamerò",     "tu": "ti chiamerai",     "lui/lei": "si chiamerà",    "noi": "ci chiameremo",  "voi": "vi chiamerete",  "loro": "si chiameranno" },
+      "rilassarsi":   { "io": "mi rilasserò",    "tu": "ti rilasserai",    "lui/lei": "si rilasserà",   "noi": "ci rilasseremo", "voi": "vi rilasserete", "loro": "si rilasseranno" },
+      "riposarsi":    { "io": "mi riposerò",     "tu": "ti riposerai",     "lui/lei": "si riposerà",    "noi": "ci riposeremo",  "voi": "vi riposerete",  "loro": "si riposeranno" },
+      "divertirsi":   { "io": "mi divertirò",    "tu": "ti divertirai",   "lui/lei": "si divertirà",   "noi": "ci divertiremo", "voi": "vi divertirete", "loro": "si divertiranno" },
+      "avvicinarsi":  { "io": "mi avvicinerò",   "tu": "ti avvicinerai",   "lui/lei": "si avvicinerà",  "noi": "ci avvicineremo", "voi": "vi avvicinerete", "loro": "si avvicineranno" },
+      "abbronzarsi":  { "io": "mi abbronzerò",   "tu": "ti abbronzerai",   "lui/lei": "si abbronzerà",  "noi": "ci abbronzeremo", "voi": "vi abbronzerete", "loro": "si abbronzeranno" },
+      "prepararsi":   { "io": "mi preparerò",    "tu": "ti preparerai",    "lui/lei": "si preparerà",   "noi": "ci prepareremo", "voi": "vi preparerete", "loro": "si prepareranno" }
+    };
+
+    // --------------------------
+    // Global variables for the Spin Wheel
+    // --------------------------
+    const verbs = [
+      "alzarsi", "svegliarsi", "truccarsi", "lavarsi", "addormentarsi", "radersi",
+      "laurearsi", "diplomarsi", "impegnarsi", "allenarsi", "stancarsi", "sedersi",
+      "bagnarsi", "pettinarsi", "vergognarsi", "spogliarsi", "sbrigarsi", "fermarsi",
+      "abituarsi", "ubriacarsi", "spazzolarsi", "sdraiarsi", "chiamarsi", "rilassarsi",
+      "riposarsi", "divertirsi", "avvicinarsi", "abbronzarsi", "prepararsi"
+    ];
+    const subjects = ["io", "tu", "lui/lei", "noi", "voi", "loro"];
+
+    // Canvas settings
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 200;
+    const numVerbs = verbs.length;
+    const arc = (2 * Math.PI) / numVerbs;
+    const pointerAngleRad = Math.PI / 2;
+    const initialSpinAngle = pointerAngleRad - arc / 2;
+    let spinAngle = initialSpinAngle;
+    let spinSpeed = 0;
+    let spinning = false;
+    let currentVerb = "";
+    let currentSubject = "";
+
+    // --------------------------
+    // Drawing the Wheel and Pointer
+    // --------------------------
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < numVerbs; i++) {
+        const angle = spinAngle + i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = getColor(i);
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, angle, angle + arc, false);
+        ctx.lineTo(centerX, centerY);
+        ctx.fill();
+
+        // Draw verb text along the arc.
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#2c3e50";
+        ctx.font = "16px sans-serif";
+        ctx.fillText(verbs[i], radius - 10, 5);
+        ctx.restore();
+      }
+      // Center circle.
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 30, 0, 2 * Math.PI);
+      ctx.fillStyle = "#ecf0f1";
+      ctx.fill();
+      ctx.stroke();
+      // Draw pointer.
+      drawPointer();
+    }
+
+    function drawPointer() {
+      ctx.beginPath();
+      const pointerWidth = 30;
+      const pointerHeight = 30;
+      ctx.moveTo(centerX, canvas.height - pointerHeight);
+      ctx.lineTo(centerX - pointerWidth / 2, canvas.height);
+      ctx.lineTo(centerX + pointerWidth / 2, canvas.height);
+      ctx.closePath();
+      ctx.fillStyle = "#e74c3c";
+      ctx.fill();
+    }
+
+    // Utility: color function.
+    function getColor(i) {
+      const colors = ["#FFB6C1", "#87CEFA", "#90EE90", "#FFD700", "#FFA07A",
+                      "#DDA0DD", "#F08080", "#E0FFFF", "#98FB98", "#FF69B4"];
+      return colors[i % colors.length];
+    }
+
+    // --------------------------
+    // Spin the Wheel Functionality
+    // --------------------------
+    function spinWheel() {
+      if (spinning) return;
+      spinning = true;
+      spinSpeed = Math.random() * 0.3 + 0.3;
+      const spinInterval = setInterval(() => {
+        spinAngle += spinSpeed;
+        spinSpeed *= 0.99;
+        drawWheel();
+        if (spinSpeed < 0.002) {
+          clearInterval(spinInterval);
+          spinning = false;
+          selectVerb();
+        }
+      }, 20);
+    }
+
+    // Determine the selected verb and subject.
+    function selectVerb() {
+      const normalizedSpin = ((spinAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const relativeAngle = (pointerAngleRad - normalizedSpin + 2 * Math.PI) % (2 * Math.PI);
+      let index = Math.floor(relativeAngle / arc);
+      if (index < 0 || index >= numVerbs) index = 0;
+      currentVerb = verbs[index];
+      currentSubject = subjects[Math.floor(Math.random() * subjects.length)];
+      if (currentSubject === "lui/lei") {
+        currentSubject = (Math.random() < 0.5) ? "lui" : "lei";
+      }
+      document.getElementById('spinResult').innerText =
+        "Coniuga '" + currentVerb + "' per il soggetto '" + currentSubject + "' in " + selectedTense + ":";
+      document.getElementById('conjugationInput').style.display = "block";
+      document.getElementById('spinFeedback').innerText = "";
+    }
+
+    // Check the user’s conjugation.
+    function checkConjugation() {
+  let userInput = document.getElementById('userConjugation').value.trim().toLowerCase();
+  let correct = "";
+  // Use "lui/lei" key when appropriate.
+  let subjectKey = (currentSubject === "lui" || currentSubject === "lei") ? "lui/lei" : currentSubject;
+  
+  if (selectedTense === "presente indicativo") {
+    correct = conjugationsPresente[currentVerb][subjectKey];
+  } else if (selectedTense === "passato prossimo") {
+    correct = conjugationsPassato[currentVerb][subjectKey];
+  } else if (selectedTense === "imperfetto") {
+    correct = conjugationsImperfetto[currentVerb][subjectKey];
+  } else if (selectedTense === "futuro") {
+    correct = conjugationsFuturo[currentVerb][subjectKey];
+  }
+  
+  // Handle answers with a slash (gender variants)
+  let acceptableAnswers = [];
+  if (correct && correct.includes("/")) {
+    let parts = correct.split("/");
+    if (currentSubject === "lui") {
+      acceptableAnswers.push(parts[0].trim());
+    } else if (currentSubject === "lei") {
+      acceptableAnswers.push(parts[1].trim());
+    } else {
+      // For subjects like "tu", "io", etc., allow both variants.
+      acceptableAnswers.push(parts[0].trim());
+      acceptableAnswers.push(parts[0].trim() + parts[1].trim()); // Sometimes the full answer is the concatenation
+      // Alternatively, you can choose to accept just the masculine variant:
+      // acceptableAnswers.push(parts[0].trim());
+    }
+  } else {
+    acceptableAnswers.push(correct);
+  }
+  
+  // Prepare possible answers with and without the subject.
+  let lowerAcceptable = acceptableAnswers.map(ans => ans.toLowerCase());
+  let lowerAcceptableWithSubject = lowerAcceptable.map(ans => (currentSubject.toLowerCase() + " " + ans));
+  
+  if (lowerAcceptable.includes(userInput) || lowerAcceptableWithSubject.includes(userInput)) {
+    // If multiple acceptable variants exist, show the one you want (here, the masculine one by default)
+    let displayAnswer = (Array.isArray(correct) ? lowerAcceptable[0] : correct);
+    document.getElementById('spinFeedback').innerText = "Corretto! " + currentSubject + " " + displayAnswer;
+  } else {
+    let displayAnswer = (Array.isArray(correct) ? lowerAcceptable[0] : correct);
+    document.getElementById('spinFeedback').innerText = "Sbagliato. La risposta corretta è: " + currentSubject + " " + displayAnswer;
+  }
+  
+  document.getElementById('userConjugation').value = "";
+  document.getElementById('conjugationInput').style.display = "none";
+}
+
+
+    // --------------------------
+    // Navigation: Go back to Tense Selection
+    // --------------------------
+    function goBack() {
+      document.getElementById('spin').style.display = "none";
+      document.getElementById('tenseSelection').style.display = "block";
+    }
+
+    // --------------------------
+    // Start Game after Tense Selection
+    // --------------------------
+    function startGame() {
+      selectedTense = document.getElementById('verbTenseSelect').value;
+      document.getElementById('tenseSelection').style.display = 'none';
+      document.getElementById('spin').style.display = 'block';
+      document.getElementById('gameTitle').innerText = "Spin the Wheel: Coniuga in " + selectedTense;
+      spinAngle = initialSpinAngle;
+      drawWheel();
+    }
+
+    // Initial drawing.
+    drawWheel();
+  </script>
+</body>
+</html>

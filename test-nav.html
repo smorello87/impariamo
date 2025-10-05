@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navigation Test - Impariamo l'Italiano!</title>
+  <!-- CSS loaded dynamically to prevent caching -->
+  <script src="js/css-loader.js"></script>
+  <style>
+    /* Test visibility helper */
+    .test-info {
+      background: #f0f0f0;
+      padding: 20px;
+      margin: 20px;
+      border: 2px solid #333;
+      font-family: monospace;
+    }
+    .test-info h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .test-info ul {
+      margin-left: 20px;
+    }
+    .test-info li {
+      margin: 5px 0;
+    }
+    .success { color: green; font-weight: bold; }
+    .warning { color: orange; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Navigation Test Page</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html">Verb Tenses</a>
+          <a href="reflexives.html">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html">Memory Game</a>
+      <a href="wordle.html">Wordle</a>
+      <div class="dropdown">
+        <a href="#">More Games</a>
+        <div class="dropdown-content">
+          <a href="crosswords.html">Crosswords</a>
+          <a href="fiore.html">Fiore</a>
+          <a href="deep.html">Deep Learning</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+
+  <main class="container">
+    <div class="test-info">
+      <h2>CSS Navigation Fixes Applied:</h2>
+      <ul>
+        <li class="success">✓ Blue font and underline removed from navigation hover states</li>
+        <li class="success">✓ Navigation links maintain white color on hover</li>
+        <li class="success">✓ Dropdown menus have invisible bridge to prevent disappearing</li>
+        <li class="success">✓ Dropdown stays visible when hovering from parent to dropdown content</li>
+        <li class="success">✓ Italian color theme preserved (Green: #008C45, Red: #CE2B37)</li>
+      </ul>
+
+      <h2 style="margin-top: 20px;">Test Instructions:</h2>
+      <ol>
+        <li>Hover over "Home" - should see red background, white text, no underline</li>
+        <li>Hover over "Spin the Wheel" - dropdown should appear</li>
+        <li>Move mouse to dropdown items - dropdown should stay visible</li>
+        <li>Hover over dropdown items - should see darker red background, white text, no underline</li>
+        <li>Test "More Games" dropdown - should work the same way</li>
+        <li>Move mouse away from navigation - dropdowns should close</li>
+      </ol>
+
+      <p style="margin-top: 20px;" class="warning">
+        Note: This is a test page. Delete this file after verifying the navigation works correctly.
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <p>Test Page - Navigation CSS Fixes</p>
+  </footer>
+</body>
+</html>

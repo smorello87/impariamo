@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impariamo l'Italiano! - Spin the Wheel (Tempi Verbali)</title>
+  <!-- CSS loaded dynamically to prevent caching -->
+  <script src="js/css-loader.js"></script>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJL9EQGT3Y');
+</script>
+</head>
+<body>
+  <header>
+    <h1>Impariamo l'Italiano!</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html" class="active" aria-current="page">Verb Tenses</a>
+          <a href="reflexives.html">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html">Memory Game</a>
+      <a href="wordle.html">Wordle</a>
+      <a href="fiore.html">Fiore</a>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+  <main class="container">
+    <!-- Verb Tense Selection -->
+    <section id="tenseSelection" class="game-section">
+      <h2>Select a Verb Tense or Type</h2>
+      <select id="verbTenseSelect">
+        <option value="presente indicativo">Presente Indicativo</option>
+        <option value="passato prossimo">Passato Prossimo</option>
+        <option value="imperfetto">Imperfetto</option>
+        <option value="futuro">Futuro</option>
+      </select>
+      <br>
+      <button onclick="startGame()">Start Game</button>
+    </section>
+
+    <!-- Spin the Wheel Game Section -->
+    <section id="spin" class="game-section" style="display:none;">
+      <h2 id="gameTitle"></h2>
+      <canvas id="wheelCanvas" width="500" height="500"></canvas>
+      <button onclick="spinWheel()">Spin!</button>
+      <div id="spinResult" style="margin-top: 20px; font-size: 18px;"></div>
+      <div id="conjugationInput" style="margin-top:20px; display:none;">
+        <input type="text" id="userConjugation" placeholder="Enter your conjugation">
+        <button onclick="checkConjugation()">Submit</button>
+      </div>
+      <div id="spinFeedback" style="margin-top:10px; font-weight: bold;"></div>
+      <!-- Added button to go back to tense selection -->
+      <button onclick="goBack()">Change Tense</button>
+    </section>
+  </main>
+
+  <footer>
+ <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://beatricecarnelutti.com/impariamo">Impariamo l'Italiano!</a> by <span property="cc:attributionName">Beatrice Carnelutti</span> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a>
+  </footer>
+
+  <script>
+    // Global variable for the selected verb tense/type
+    let selectedTense = "";
+
+    // --------------------------
+    // Conjugation Dictionaries
+    // --------------------------
+    // Presente
+    const conjugationsPresente = {
+      "dire": {"io": "dico", "tu": "dici", "lui/lei": "dice", "noi": "diciamo", "voi": "dicete", "loro": "dicono"},
+      "telefonare": {"io": "telefono", "tu": "telefoni", "lui/lei": "telefona", "noi": "telefoniamo", "voi": "telefonate", "loro": "telefonano"},
+      "essere": {"io": "sono", "tu": "sei", "lui/lei": "è stato/a", "noi": "siamo stati/e", "voi": "siete stati/e", "loro": "sono stati/e"},
+      "avere": {"io": "ho", "tu": "hai", "lui/lei": "ha", "noi": "abbiamo", "voi": "avete", "loro": "hanno"},
+      "vedere": {"io": "vedo", "tu": "vedi", "lui/lei": "vede", "noi": "vediamo", "voi": "vedete", "loro": "vedono"},
+      "andare": {"io": "vado", "tu": "vai", "lui/lei": "va", "noi": "andiamo", "voi": "andate", "loro": "vanno"},
+      "alzarsi": {"io": "mi alzo", "tu": "ti alzi", "lui/lei": "si alza", "noi": "ci alziamo", "voi": "vi alzate", "loro": "si alzano"},
+      "diventare": {"io": "divento", "tu": "diventi", "lui/lei": "diventa", "noi": "diventiamo", "voi": "diventate", "loro": "diventano"},
+      "dormire": {"io": "dormo", "tu": "dormi", "lui/lei": "dorme", "noi": "dormiamo", "voi": "dormite", "loro": "dormono"},
+      "capire": {"io": "capisco", "tu": "capisci", "lui/lei": "capisce", "noi": "capiamo", "voi": "capite", "loro": "capiscono"},
+      "partire": {"io": "parto", "tu": "parti", "lui/lei": "parte", "noi": "partiamo", "voi": "partite", "loro": "partono"},
+      "uscire": {"io": "esco", "tu": "esci", "lui/lei": "esce", "noi": "usciamo", "voi": "uscite", "loro": "escono"},
+      "entrare": {"io": "entro", "tu": "entri", "lui/lei": "entra", "noi": "entriamo", "voi": "entrate", "loro": "entrano"},
+      "tornare": {"io": "torno", "tu": "torni", "lui/lei": "torna", "noi": "torniamo", "voi": "tornate", "loro": "tornano"},
+      "arrivare": {"io": "arrivo", "tu": "arrivi", "lui/lei": "arriva", "noi": "arriviamo", "voi": "arrivate", "loro": "arrivano"},
+      "incontrare": {"io": "incontro", "tu": "incontri", "lui/lei": "incontra", "noi": "incontriamo", "voi": "incontrate", "loro": "incontrano"},
+      "nascere": {"io": "nasco", "tu": "nasci", "lui/lei": "nasce", "noi": "nasciamo", "voi": "nascete", "loro": "nascono"},
+      "mangiare": {"io": "mangio", "tu": "mangi", "lui/lei": "mangia", "noi": "mangiamo", "voi": "mangiate", "loro": "mangiano"},
+      "bere": {"io": "bevo", "tu": "bevi", "lui/lei": "beve", "noi": "beviamo", "voi": "bevete", "loro": "bevono"},
+      "fare": {"io": "faccio", "tu": "fai", "lui/lei": "fa", "noi": "facciamo", "voi": "fate", "loro": "fanno"}
+    };
+
+    // Passato Prossimo
+    const conjugationsPassato = {
+      "dire": {"io": "ho detto", "tu": "hai detto", "lui/lei": "ha detto", "noi": "abbiamo detto", "voi": "avete detto", "loro": "hanno detto"},
+      "telefonare": {"io": "ho telefonato", "tu": "hai telefonato", "lui/lei": "ha telefonato", "noi": "abbiamo telefonato", "voi": "avete telefonato", "loro": "hanno telefonato"},
+      "essere": {"io": "sono stato/a", "tu": "sei stato/a", "lui/lei": "è stato/a", "noi": "siamo stati/e", "voi": "siete stati/e", "loro": "sono stati/e"},
+      "avere": {"io": "ho avuto", "tu": "hai avuto", "lui/lei": "ha avuto", "noi": "abbiamo avuto", "voi": "avete avuto", "loro": "hanno avuto"},
+      "vedere": {"io": "ho visto", "tu": "hai visto", "lui/lei": "ha visto", "noi": "abbiamo visto", "voi": "avete visto", "loro": "hanno visto"},
+      "andare": {"io": "sono andato/a", "tu": "sei andato/a", "lui/lei": "è andato/a", "noi": "siamo andati/e", "voi": "siete andati/e", "loro": "sono andati/e"},
+      "alzarsi": {"io": "mi sono alzato/a", "tu": "ti sei alzato/a", "lui/lei": "si è alzato/a", "noi": "ci siamo alzati/e", "voi": "vi siete alzati/e", "loro": "si sono alzati/e"},
+      "diventare": {"io": "sono diventato/a", "tu": "sei diventato/a", "lui/lei": "è diventato/a", "noi": "siamo diventati/e", "voi": "siete diventati/e", "loro": "sono diventati/e"},
+      "dormire": {"io": "ho dormito", "tu": "hai dormito", "lui/lei": "ha dormito", "noi": "abbiamo dormito", "voi": "avete dormito", "loro": "hanno dormito"},
+      "capire": {"io": "ho capito", "tu": "hai capito", "lui/lei": "ha capito", "noi": "abbiamo capito", "voi": "avete capito", "loro": "hanno capito"},
+      "partire": {"io": "sono partito/a", "tu": "sei partito/a", "lui/lei": "è partito/a", "noi": "siamo partiti/e", "voi": "siete partiti/e", "loro": "sono partiti/e"},
+      "uscire": {"io": "sono uscito/a", "tu": "sei uscito/a", "lui/lei": "è uscito/a", "noi": "siamo usciti/e", "voi": "siete usciti/e", "loro": "sono usciti/e"},
+      "entrare": {"io": "sono entrato/a", "tu": "sei entrato/a", "lui/lei": "è entrato/a", "noi": "siamo entrati/e", "voi": "siete entrati/e", "loro": "sono entrati/e"},
+      "tornare": {"io": "sono tornato/a", "tu": "sei tornato/a", "lui/lei": "è tornato/a", "noi": "siamo tornati/e", "voi": "siete tornati/e", "loro": "sono tornati/e"},
+      "arrivare": {"io": "sono arrivato/a", "tu": "sei arrivato/a", "lui/lei": "è arrivato/a", "noi": "siamo arrivati/e", "voi": "siete arrivati/e", "loro": "sono arrivati/e"},
+      "incontrare": {"io": "ho incontrato", "tu": "hai incontrato", "lui/lei": "ha incontrato", "noi": "abbiamo incontrato", "voi": "avete incontrato", "loro": "hanno incontrato"},
+      "nascere": {"io": "sono nato/a", "tu": "sei nato/a", "lui/lei": "è nato/a", "noi": "siamo nati/e", "voi": "siete nati/e", "loro": "sono nati/e"},
+      "mangiare": {"io": "ho mangiato", "tu": "hai mangiato", "lui/lei": "ha mangiato", "noi": "abbiamo mangiato", "voi": "avete mangiato", "loro": "hanno mangiato"},
+      "bere": {"io": "ho bevuto", "tu": "hai bevuto", "lui/lei": "ha bevuto", "noi": "abbiamo bevuto", "voi": "avete bevuto", "loro": "hanno bevuto"},
+      "fare": {"io": "ho fatto", "tu": "hai fatto", "lui/lei": "ha fatto", "noi": "abbiamo fatto", "voi": "avete fatto", "loro": "hanno fatto"}
+    };
+
+    // Imperfetto
+    const conjugationsImperfetto = {
+      "dire": {"io": "dicevo", "tu": "dicevi", "lui/lei": "diceva", "noi": "dicevamo", "voi": "dicevate", "loro": "dicevano"},
+      "telefonare": {"io": "telefonavo", "tu": "telefonavi", "lui/lei": "telefonava", "noi": "telefonavamo", "voi": "telefonavate", "loro": "telefonavano"},
+      "essere": {"io": "ero", "tu": "eri", "lui/lei": "era", "noi": "eravamo", "voi": "eravate", "loro": "erano"},
+      "avere": {"io": "avevo", "tu": "avevi", "lui/lei": "aveva", "noi": "avevamo", "voi": "avevate", "loro": "avevano"},
+      "vedere": {"io": "vedevo", "tu": "vedevi", "lui/lei": "vedeva", "noi": "vedevamo", "voi": "vedevate", "loro": "vedevano"},
+      "andare": {"io": "andavo", "tu": "andavi", "lui/lei": "andava", "noi": "andavamo", "voi": "andavate", "loro": "andavano"},
+      "alzarsi": {"io": "mi alzavo", "tu": "ti alzavi", "lui/lei": "si alzava", "noi": "ci alzavamo", "voi": "vi alzavate", "loro": "si alzavano"},
+      "diventare": {"io": "diventavo", "tu": "diventavi", "lui/lei": "diventava", "noi": "diventavamo", "voi": "diventavate", "loro": "diventavano"},
+      "dormire": {"io": "dormivo", "tu": "dormivi", "lui/lei": "dormiva", "noi": "dormivamo", "voi": "dormivate", "loro": "dormivano"},
+      "capire": {"io": "capivo", "tu": "capivi", "lui/lei": "capiva", "noi": "capivamo", "voi": "capivate", "loro": "capivano"},
+      "partire": {"io": "partivo", "tu": "partivi", "lui/lei": "partiva", "noi": "partivamo", "voi": "partivate", "loro": "partivano"},
+      "uscire": {"io": "uscivo", "tu": "uscivi", "lui/lei": "usciva", "noi": "uscivamo", "voi": "uscivate", "loro": "uscivano"},
+      "entrare": {"io": "entravo", "tu": "entravi", "lui/lei": "entrava", "noi": "entravamo", "voi": "entravate", "loro": "entravano"},
+      "tornare": {"io": "tornavo", "tu": "tornavi", "lui/lei": "tornava", "noi": "tornavamo", "voi": "tornavate", "loro": "tornavano"},
+      "arrivare": {"io": "arrivavo", "tu": "arrivavi", "lui/lei": "arrivava", "noi": "arrivavamo", "voi": "arrivavate", "loro": "arrivavano"},
+      "incontrare": {"io": "incontravo", "tu": "incontravi", "lui/lei": "incontrava", "noi": "incontravamo", "voi": "incontravate", "loro": "incontravano"},
+      "nascere": {"io": "nascevo", "tu": "nascevi", "lui/lei": "nasceva", "noi": "nascevamo", "voi": "nascevate", "loro": "nascevano"},
+      "mangiare": {"io": "mangiavo", "tu": "mangiavi", "lui/lei": "mangiava", "noi": "mangiavamo", "voi": "mangiavate", "loro": "mangiavano"},
+      "bere": {"io": "bevevo", "tu": "bevevi", "lui/lei": "beveva", "noi": "bevevamo", "voi": "bevevate", "loro": "bevevano"},
+      "fare": {"io": "facevo", "tu": "facevi", "lui/lei": "faceva", "noi": "facevamo", "voi": "facevate", "loro": "facevano"}
+    };
+
+    // Futuro
+    const conjugationsFuturo = {
+      "dire": {"io": "dirò", "tu": "dirai", "lui/lei": "dirà", "noi": "diremo", "voi": "direte", "loro": "diranno"},
+      "telefonare": {"io": "telefonerò", "tu": "telefonerai", "lui/lei": "telefonerà", "noi": "telefoneremo", "voi": "telefonerete", "loro": "telefoneranno"},
+      "essere": {"io": "sarò", "tu": "sarai", "lui/lei": "sarà", "noi": "saremo", "voi": "sarete", "loro": "saranno"},
+      "avere": {"io": "avrò", "tu": "avrai", "lui/lei": "avrà", "noi": "avremo", "voi": "avrete", "loro": "avranno"},
+      "vedere": {"io": "vedrò", "tu": "vedrai", "lui/lei": "vedrà", "noi": "vedremo", "voi": "vedrete", "loro": "vedranno"},
+      "andare": {"io": "andrò", "tu": "andrai", "lui/lei": "andra", "noi": "andremo", "voi": "andrete", "loro": "andranno"},
+      "alzarsi": {"io": "mi alzerò", "tu": "ti alzerai", "lui/lei": "si alzerà", "noi": "ci alzeremo", "voi": "vi alzerete", "loro": "si alzeranno"},
+      "diventare": {"io": "diventerò", "tu": "diventerai", "lui/lei": "diventerà", "noi": "diventeremo", "voi": "diventerete", "loro": "diventeranno"},
+      "dormire": {"io": "dormirò", "tu": "dormirai", "lui/lei": "dormirà", "noi": "dormiremo", "voi": "dormirete", "loro": "dormiranno"},
+      "capire": {"io": "capirò", "tu": "capirai", "lui/lei": "capirà", "noi": "capiremo", "voi": "capirete", "loro": "capiranno"},
+      "partire": {"io": "partirò", "tu": "partirai", "lui/lei": "partirà", "noi": "partiremo", "voi": "partirete", "loro": "partiranno"},
+      "uscire": {"io": "uscirò", "tu": "uscirai", "lui/lei": "uscirà", "noi": "usciremo", "voi": "uscirete", "loro": "usciranno"},
+      "entrare": {"io": "entrerò", "tu": "entrerai", "lui/lei": "entrerà", "noi": "entreremo", "voi": "entrerete", "loro": "entreranno"},
+      "tornare": {"io": "tornerò", "tu": "tornerai", "lui/lei": "tornerà", "noi": "torneremo", "voi": "tornerete", "loro": "torneranno"},
+      "arrivare": {"io": "arriverò", "tu": "arriverai", "lui/lei": "arriverà", "noi": "arriveremo", "voi": "arriverete", "loro": "arriveranno"},
+      "incontrare": {"io": "incontrerò", "tu": "incontrerai", "lui/lei": "incontrerà", "noi": "incontreremo", "voi": "incontrerete", "loro": "incontreranno"},
+      "nascere": {"io": "nascerò", "tu": "nascerai", "lui/lei": "nascerà", "noi": "nasceremo", "voi": "nascerete", "loro": "nasceranno"},
+      "mangiare": {"io": "mangerò", "tu": "mangerai", "lui/lei": "mangerà", "noi": "mangeremo", "voi": "mangerete", "loro": "mangeranno"},
+      "bere": {"io": "berò", "tu": "berai", "lui/lei": "berà", "noi": "beremo", "voi": "berete", "loro": "beranno"},
+      "fare": {"io": "farò", "tu": "farai", "lui/lei": "farà", "noi": "faremo", "voi": "farete", "loro": "faranno"}
+    };
+
+    // --------------------------
+    // Global variables for the Spin Wheel
+    // --------------------------
+    const verbs = ["dire", "telefonare", "essere", "avere", "vedere", "andare", "alzarsi", "diventare", "dormire", "capire", "partire", "uscire", "entrare", "tornare", "arrivare", "incontrare", "nascere", "mangiare", "bere", "fare"];
+    const subjects = ["io", "tu", "lui/lei", "noi", "voi", "loro"];
+
+    // Set up canvas parameters.
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 200;
+    const numVerbs = verbs.length;
+    const arc = (2 * Math.PI) / numVerbs;
+    // The pointer is at bottom center; its angle is PI/2.
+    const pointerAngleRad = Math.PI / 2;
+    // Set initial spinAngle so that segment 0 is centered at pointerAngleRad.
+    const initialSpinAngle = pointerAngleRad - arc / 2;
+    let spinAngle = initialSpinAngle;
+    let spinSpeed = 0;
+    let spinning = false;
+    let currentVerb = "";
+    let currentSubject = "";
+
+    // --------------------------
+    // Drawing the Wheel and Pointer
+    // --------------------------
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < numVerbs; i++) {
+        const angle = spinAngle + i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = getColor(i);
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, angle, angle + arc, false);
+        ctx.lineTo(centerX, centerY);
+        ctx.fill();
+
+        // Draw the verb text along the arc.
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#2c3e50";
+        ctx.font = "16px sans-serif";
+        ctx.fillText(verbs[i], radius - 10, 5);
+        ctx.restore();
+      }
+      // Draw the center circle.
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 30, 0, 2 * Math.PI);
+      ctx.fillStyle = "#ecf0f1";
+      ctx.fill();
+      ctx.stroke();
+
+      // Draw the pointer (red triangle) at the bottom center.
+      drawPointer();
+    }
+
+    function toggleMenu() {
+  const menu = document.querySelector('nav .menu-items');
+  menu.classList.toggle('show-menu');
+}
+
+    function drawPointer() {
+      ctx.beginPath();
+      const pointerWidth = 30;
+      const pointerHeight = 30;
+      // Draw a triangle with its tip pointing upward.
+      // Tip is at (centerX, canvas.height - pointerHeight)
+      ctx.moveTo(centerX, canvas.height - pointerHeight);
+      ctx.lineTo(centerX - pointerWidth / 2, canvas.height);
+      ctx.lineTo(centerX + pointerWidth / 2, canvas.height);
+      ctx.closePath();
+      ctx.fillStyle = "#e74c3c";
+      ctx.fill();
+    }
+
+    // Utility function for colors.
+    function getColor(i) {
+      const colors = ["#FFB6C1", "#87CEFA", "#90EE90", "#FFD700", "#FFA07A",
+                      "#DDA0DD", "#F08080", "#E0FFFF", "#98FB98", "#FF69B4"];
+      return colors[i % colors.length];
+    }
+
+    // --------------------------
+    // Spin the Wheel Functionality
+    // --------------------------
+    function spinWheel() {
+      if (spinning) return;
+      spinning = true;
+      spinSpeed = Math.random() * 0.3 + 0.3;
+      const spinInterval = setInterval(() => {
+        spinAngle += spinSpeed;
+        spinSpeed *= 0.99; // simulate friction
+        drawWheel();
+        if (spinSpeed < 0.002) {
+          clearInterval(spinInterval);
+          spinning = false;
+          selectVerb();
+        }
+      }, 20);
+    }
+
+    // Determine which segment is under the pointer.
+    function selectVerb() {
+      // Normalize spinAngle between 0 and 2π.
+      const normalizedSpin = ((spinAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      // Calculate relative angle from the pointer (at pointerAngleRad).
+      const relativeAngle = (pointerAngleRad - normalizedSpin + 2 * Math.PI) % (2 * Math.PI);
+      let index = Math.floor(relativeAngle / arc);
+      if (index < 0 || index >= numVerbs) { index = 0; }
+      currentVerb = verbs[index];
+      
+      // Randomize subject. If the subject is "lui/lei", choose randomly between "lui" and "lei".
+      currentSubject = subjects[Math.floor(Math.random() * subjects.length)];
+      if (currentSubject === "lui/lei") {
+        currentSubject = (Math.random() < 0.5) ? "lui" : "lei";
+      }
+      
+      document.getElementById('spinResult').innerText =
+        "Conjugate '" + currentVerb + "' for subject '" + currentSubject + "' in " + selectedTense + ":";
+      document.getElementById('conjugationInput').style.display = "block";
+      document.getElementById('spinFeedback').innerText = "";
+    }
+
+    // --------------------------
+    // Handling Conjugation Checking
+    // --------------------------
+    function checkConjugation() {
+      let userInput = document.getElementById('userConjugation').value.trim().toLowerCase();
+      let correct = "";
+      // Use "lui/lei" key when appropriate.
+      let subjectKey = (currentSubject === "lui" || currentSubject === "lei") ? "lui/lei" : currentSubject;
+      
+      if (selectedTense === "presente indicativo") {
+        correct = conjugationsPresente[currentVerb][subjectKey];
+      } else if (selectedTense === "passato prossimo") {
+        correct = conjugationsPassato[currentVerb][subjectKey];
+      } else if (selectedTense === "imperfetto") {
+        correct = conjugationsImperfetto[currentVerb][subjectKey];
+      } else if (selectedTense === "futuro") {
+        correct = conjugationsFuturo[currentVerb][subjectKey];
+      }
+      
+      // If the correct conjugation includes a slash, split it to choose the appropriate gender variant.
+      if (correct && correct.includes("/")) {
+        let parts = correct.split("/");
+        if (currentSubject === "lui") {
+          correct = parts[0].trim();
+        } else if (currentSubject === "lei") {
+          correct = parts[1].trim();
+        } else {
+          correct = (Math.random() < 0.5) ? parts[0].trim() : parts[1].trim();
+        }
+      }
+      
+      // Allow either just the conjugated verb or subject + space + conjugated verb.
+      let answerWithoutSubject = correct.toLowerCase();
+      let answerWithSubject = (currentSubject.toLowerCase() + " " + correct.toLowerCase());
+      
+      if (userInput === answerWithoutSubject || userInput === answerWithSubject) {
+        document.getElementById('spinFeedback').innerText = "Correct! " + currentSubject + " " + correct;
+      } else {
+        document.getElementById('spinFeedback').innerText = "Incorrect. The correct answer is: " + currentSubject + " " + correct;
+      }
+      
+      document.getElementById('userConjugation').value = "";
+      document.getElementById('conjugationInput').style.display = "none";
+    }
+
+    // --------------------------
+    // Navigation: Go back to Tense Selection
+    // --------------------------
+    function goBack() {
+      document.getElementById('spin').style.display = "none";
+      document.getElementById('tenseSelection').style.display = "block";
+    }
+
+    // --------------------------
+    // Start Game after Tense Selection
+    // --------------------------
+    function startGame() {
+      selectedTense = document.getElementById('verbTenseSelect').value;
+      document.getElementById('tenseSelection').style.display = 'none';
+      document.getElementById('spin').style.display = 'block';
+      document.getElementById('gameTitle').innerText = "Spin the Wheel: Conjugate in " + selectedTense;
+      // Reset spin angle to initial alignment.
+      spinAngle = initialSpinAngle;
+      drawWheel();
+    }
+
+    // Initial drawing of the wheel.
+    drawWheel();
+  </script>
+</body>
+</html>

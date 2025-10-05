@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impariamo l'Italiano! - Wordle Game (Difficulty Levels)</title>
+  <link rel="stylesheet" href="css/styles-v2.css">
+  <link rel="stylesheet" href="css/games-v2.css">
+  <style>
+    /* Wordle-specific styles */
+    .game-section {
+      text-align: center;
+      margin: var(--spacing-lg) 0;
+    }
+    #wordleFeedback {
+      margin-top: var(--spacing-lg);
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-large);
+      min-height: 30px;
+    }
+    #guessInput {
+      text-transform: uppercase;
+      width: 150px;
+      text-align: center;
+      font-weight: var(--font-weight-bold);
+    }
+  </style>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJL9EQGT3Y');
+</script>
+</head>
+<body>
+  <header>
+    <h1>Impariamo l'Italiano!</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html">Verb Tenses</a>
+          <a href="reflexives.html">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html">Memory Game</a>
+      <a href="wordle.html" class="active" aria-current="page">Wordle</a>
+      <a href="fiore.html">Fiore</a>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+  <main class="container">
+    <!-- Level Selection Section -->
+    <section id="levelSelection" class="game-section">
+      <h2>Select Difficulty Level</h2>
+      <select id="levelSelect">
+        <option value="facile">Facile</option>
+        <option value="medio">Medio</option>
+        <option value="difficile">Difficile</option>
+      </select>
+      <br>
+      <button onclick="startGame()">Start Game</button>
+    </section>
+
+    <!-- Wordle Game Section -->
+    <section id="wordleGame" class="game-section" style="display:none;">
+      <h2 id="gameTitle"></h2>
+      <div id="wordleBoard" class="wordle-board"></div>
+      <br>
+      <input type="text" id="guessInput" maxlength="5" placeholder="Enter guess">
+      <button onclick="submitGuess()">Submit</button>
+      <div id="wordleFeedback" style="margin-top:20px; font-weight:bold;"></div>
+      <button onclick="resetGame()">New Game</button>
+    </section>
+  </main>
+  <footer>
+    <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://beatricecarnelutti.com/impariamo">Impariamo l'Italiano!</a> by <span property="cc:attributionName">Beatrice Carnelutti</span> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a>
+     </footer>
+    <script>
+    // Define three arrays for different difficulty levels (all words are 5 letters and uppercase)
+    const facileWords = ["MAMMA", "GATTO", "PASTA", "ACQUA", "LIBRO", "FIORE", "VERDE", "ROSSO", "SEDIA", "PORTA", "STELLA", "TERRA", "NOTTE", "TEMPO", "LUNGO", "BELLO", "VENTO", "SALTO", "BUONO", "CALDO", "LAGHI", "BRAVO", "BORSA"];
+    const medioWords  = ["GAMBA", "TESTA", "LATTE", "DOLCE", "FORTE", "SCALA", "LEGGE", "CORSA", "PESCA", "BANCO", "CREDE", "FATTO", "FRASE", "METRO", "PARLA", "PUNTO", "MESSO", "FESTA", "VASCA", "LEGNO", "CAUSA", "MONDO"];
+    const difficileWords = ["ALGHE", "FUGGE", "BOZZA", "CENNO", "VIGNA", "AVIDO", "OPACO", "CULTO", "PAGHI", "PALCO", "QUOTA", "RADIO", "UDIRE", "VALLE", "VALGO"];
+    
+    let targetWord = "";
+    const maxGuesses = 6;
+    let currentGuess = 0;
+    const board = document.getElementById("wordleBoard");
+    
+    // Choose target word based on selected level
+    function chooseTarget() {
+      const level = document.getElementById("levelSelect").value;
+      let pool = [];
+      if (level === "facile") {
+        pool = facileWords;
+      } else if (level === "medio") {
+        pool = medioWords;
+      } else if (level === "difficile") {
+        pool = difficileWords;
+      }
+      const randomIndex = Math.floor(Math.random() * pool.length);
+      targetWord = pool[randomIndex];
+      console.log("Target Word:", targetWord); // For debugging (remove in production)
+    }
+    
+    // Initialize the board with empty tiles (6 rows x 5 columns)
+    function initBoard() {
+      board.innerHTML = "";
+      for (let r = 0; r < maxGuesses; r++) {
+        for (let c = 0; c < 5; c++) {
+          const tile = document.createElement("div");
+          tile.classList.add("tile", "default");
+          tile.setAttribute("data-row", r);
+          tile.setAttribute("data-col", c);
+          board.appendChild(tile);
+        }
+      }
+    }
+    
+    // Submit a guess
+    function submitGuess() {
+      const input = document.getElementById("guessInput");
+      let guess = input.value.trim().toUpperCase();
+      if (guess.length !== 5) {
+        document.getElementById("wordleFeedback").innerText = "Please enter exactly 5 letters.";
+        return;
+      }
+      document.getElementById("wordleFeedback").innerText = "";
+      input.value = "";
+      processGuess(guess);
+    }
+    
+    // Process the guess and update the board
+    function processGuess(guess) {
+      const rowTiles = document.querySelectorAll(`.tile[data-row='${currentGuess}']`);
+      let targetLetters = targetWord.split('');
+      let colors = Array(5).fill("gray");
+      
+      // First pass: green letters
+      for (let i = 0; i < 5; i++) {
+        if (guess[i] === targetWord[i]) {
+          colors[i] = "green";
+          targetLetters[i] = null;
+        }
+      }
+      
+      // Second pass: yellow letters
+      for (let i = 0; i < 5; i++) {
+        if (colors[i] === "green") continue;
+        const index = targetLetters.indexOf(guess[i]);
+        if (index !== -1) {
+          colors[i] = "yellow";
+          targetLetters[index] = null;
+        }
+      }
+      
+      // Update the tiles with the guess and colors
+      for (let i = 0; i < 5; i++) {
+        rowTiles[i].innerText = guess[i];
+        rowTiles[i].classList.remove("default");
+        rowTiles[i].classList.add(colors[i]);
+      }
+      
+      currentGuess++;
+      if (guess === targetWord) {
+        document.getElementById("wordleFeedback").innerText = "Congratulations! You guessed correctly.";
+      } else if (currentGuess === maxGuesses) {
+        document.getElementById("wordleFeedback").innerText = "Game over! The word was: " + targetWord;
+      }
+    }
+    
+    // Reset game (new game)
+    function resetGame() {
+      currentGuess = 0;
+      chooseTarget();
+      initBoard();
+      document.getElementById("wordleFeedback").innerText = "";
+      document.getElementById("guessInput").value = "";
+    }
+    
+    // Start Game: Hide level selection, show Wordle game, choose target word and initialize board
+    function startGame() {
+      document.getElementById("levelSelection").style.display = "none";
+      document.getElementById("wordleGame").style.display = "block";
+      document.getElementById("gameTitle").innerText = "Wordle Game (" + document.getElementById("levelSelect").value.charAt(0).toUpperCase() + document.getElementById("levelSelect").value.slice(1) + ")";
+      currentGuess = 0;
+      chooseTarget();
+      initBoard();
+    }
+    
+    // On page load, display level selection (Wordle game section remains hidden)
+    window.onload = function() {
+      document.getElementById("wordleGame").style.display = "none";
+    };
+  </script>
+</body>
+</html>

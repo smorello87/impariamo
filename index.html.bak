@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impariamo l'Italiano! - Home</title>
+  <!-- CSS loaded dynamically to prevent caching -->
+  <script src="js/css-loader.js"></script>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJL9EQGT3Y');
+</script>
+</head>
+<body>
+  <header>
+    <h1>Impariamo l'Italiano!</h1>
+  </header>
+  <nav>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="menu-items">
+      <a href="index.html" class="active" aria-current="page">Home</a>
+      <div class="dropdown">
+        <a href="#">Spin the Wheel</a>
+        <div class="dropdown-content">
+          <a href="tenses.html">Verb Tenses</a>
+          <a href="reflexives.html">Reflexives</a>
+        </div>
+      </div>
+      <a href="memory.html">Memory Game</a>
+      <a href="wordle.html">Wordle</a>
+      <a href="fiore.html">Fiore</a>
+    </div>
+  </nav>
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('nav .menu-items');
+      menu.classList.toggle('show-menu');
+    }
+  </script>
+  <main class="container">
+      <h2>Benvenuti su Impariamo l'Italiano!</h2>
+<p><strong>Impariamo l'Italiano</strong> è una raccolta di strumenti interattivi pensati per l'insegnamento della lingua italiana in modo divertente ed efficace, adatta a corsi di scuola superiore e universitari.</p>
+
+<div class="tool">
+  <p><a href="tenses.html">Spin the Wheel (Tempi Verbali)</a> e <a href="reflexives.html">Spin the Wheel (Verbi Riflessivi)</a> sono giochi interattivi per esercitarsi con la coniugazione dei verbi. Seleziona un tempo verbale e lascia che la ruota scelga casualmente un verbo e un soggetto: chiedi poi agli studenti di fornire la coniugazione corretta.</p>
+</div>
+
+<div class="tool">
+  <p><a href="memory.html">Memory Game</a> aiuta a rafforzare il vocabolario abbinando parole in italiano con le loro traduzioni in inglese.</p>
+</div>
+
+<div class="tool">
+  <p><a href="wordle.html">Wordle</a> sfida gli studenti a indovinare una parola segreta in sei tentativi. Dopo ogni tentativo, riceveranno un feedback: lettere corrette nella posizione sbagliata saranno evidenziate in giallo, mentre quelle corrette e nella posizione giusta saranno in verde.</p>
+</div>
+
+<div class="tool">
+  <p><a href="fiore.html">Fiore che sboccia</a> invita gli studenti a trovare la parola nascosta, guardando il fiore sbocciare prima di esaurire i tentativi!</p>
+</div>
+
+<div class="tool">
+  <p><a href="crosswords.html">Crosswords</a> offre cruciverba tematici per praticare il vocabolario italiano in modo divertente e coinvolgente.</p>
+</div>
+
+<div class="tool">
+  <p><a href="deep.html">Deep Learning Suite</a> fornisce strumenti avanzati per l'apprendimento approfondito, inclusi flashcards, coniugazioni verbali, esercizi di ascolto e controllo grammaticale.</p>
+</div>
+
+<p><strong>Impariamo l'Italiano</strong> è una suite in continua espansione: torna spesso a trovarci per scoprire nuovi aggiornamenti!</p>
+
+  </main>
+  <footer>
+ <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://beatricecarnelutti.com/impariamo">Impariamo l'Italiano!</a> by <span property="cc:attributionName">Beatrice Carnelutti</span> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a>
+  </footer>
+</body>
+</html>
