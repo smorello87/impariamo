@@ -4,130 +4,100 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Italian language learning website called "Impariamo l'Italiano!" featuring interactive educational games and exercises. The project is a static HTML/CSS/JavaScript website with no build process or dependencies.
-
-## Architecture
-
-### CSS Architecture (IMPORTANT)
-
-**CSS Versioning System:**
-- CSS files use version numbers in filenames: `styles-v2.css`, `games-v2.css`
-- When updating CSS, increment version number (v2 → v3) and update ALL HTML `<link>` tags
-- This is required because the site is hosted on Reclaim Hosting which has aggressive server-side caching
-- The `.htaccess` file forces no-cache headers, but version numbers provide additional cache-busting
-
-**CSS Structure:**
-- `css/styles-v2.css` - Main stylesheet with navigation, forms, layout, Italian flag color variables
-- `css/games-v2.css` - Game-specific styles (memory cards, wordle tiles, wheel, crosswords)
-- Each HTML file has inline `<style>` block for page-specific overrides
-- All pages use `.game-section { text-align: center; margin: var(--spacing-lg) 0; }` for centered selection screens
-
-**CSS Custom Properties (in styles-v2.css):**
-- Italian flag colors: `--color-italian-green: #008C45`, `--color-italian-red: #CE2B37`, `--color-italian-white: #ffffff`
-- Spacing: `--spacing-xs` through `--spacing-xxl` (5px to 40px)
-- Z-index layers: `--z-dropdown: 10`, `--z-mobile-menu: 50`, `--z-modal: 100`, `--z-notification: 200`
-
-### File Structure
-- **HTML Game Pages**: Each game is a standalone HTML file with embedded JavaScript
-  - `index.html` - Main landing page
-  - `wordle.html` - Italian Wordle with difficulty levels
-  - `memory.html` - Memory card matching game with topics (food, daily activities, family, school, work)
-  - `tenses.html` - Verb tense wheel spinner
-  - `reflexives.html` - Reflexive verbs wheel spinner
-  - `crosswords.html` - Italian crossword puzzle
-  - `fiore.html` - Flower-based word guessing game
-  - `deep.html` - Deep learning exercises (uses Tailwind CSS, different architecture)
-- **Assets**: `flower/` directory contains images (flower0-8.jpg)
-- **Server Config**: `.htaccess` with aggressive cache prevention for Reclaim Hosting
-
-### Common Patterns
-
-1. **Page Structure Template**:
-   - Header with Italian green background
-   - Navigation bar with Italian red background and dropdown menus
-   - Responsive hamburger menu for mobile (<600px)
-   - Main content in `.container` class
-   - Footer with Italian green background
-   - Google Analytics tracking (G-QJL9EQGT3Y)
-
-2. **CSS Linking Pattern** (all HTML files except deep.html):
-   ```html
-   <link rel="stylesheet" href="css/styles-v2.css">
-   <link rel="stylesheet" href="css/games-v2.css">
-   <style>
-     /* Page-specific overrides */
-     .game-section {
-       text-align: center;
-       margin: var(--spacing-lg) 0;
-     }
-   </style>
-   ```
-
-3. **Mobile Responsive Design**:
-   - Desktop: Horizontal navigation with dropdown hovers
-   - Mobile (<600px): Hamburger menu with vertical layout, 30px navigation padding
-   - Touch targets: Minimum 44px for all interactive elements
-   - Input fields use 16px font-size to prevent iOS auto-zoom
+"Impariamo l'Italiano!" is an Italian language learning website featuring interactive educational games. It's a static HTML/CSS/JavaScript site with no build process or dependencies.
 
 ## Development Commands
 
-Since this is a static website with no build process:
-
 ```bash
-# Open the site locally
-open index.html
-
-# Start a simple HTTP server (if Python is available)
-python -m http.server 8000
-# or
+# Start local server
 python3 -m http.server 8000
 
-# For PHP users
-php -S localhost:8000
+# Open directly (no server needed for basic testing)
+open index.html
 ```
 
-## Key Implementation Details
+## Architecture
 
-### CSS Updates (CRITICAL WORKFLOW)
+### CSS Versioning (CRITICAL)
 
-When updating CSS:
-1. **Increment version number** in filename: `styles-v2.css` → `styles-v3.css`
-2. **Update ALL HTML files** to reference new version in `<link>` tags
-3. **Upload both** new CSS file and updated HTML files to server
-4. This is necessary due to Reclaim Hosting's aggressive caching
+CSS files use version numbers for cache-busting due to aggressive Reclaim Hosting caching:
+- Current: `styles-v3.css`, `games-v3.css`
+- When updating CSS: increment version (v3 → v4) and update ALL HTML `<link>` tags
 
-### Adding New Games
-1. Copy structure from existing game HTML file (e.g., `memory.html` or `wordle.html`)
-2. Link to current CSS versions: `<link rel="stylesheet" href="css/styles-v2.css">` and `css/games-v2.css`
-3. Add inline `<style>` block with `.game-section { text-align: center; margin: var(--spacing-lg) 0; }`
-4. Maintain header/navigation/footer structure
-5. Include Google Analytics snippet (G-QJL9EQGT3Y)
-6. Update navigation in ALL HTML files (see below)
+### CSS Design System (v3 - "La Dolce Lingua")
 
-### Navigation Updates
-Navigation appears in every HTML file. When adding/removing pages:
-- Update `<nav>` section in ALL HTML files
-- Maintain dropdown structure: `<div class="dropdown">` with `<div class="dropdown-content">`
-- Add `class="active"` to current page link
-- Navigation has single arrow via CSS: `nav .dropdown > a::after { content: '\25BC'; }`
+**Color Palette (Tuscan-inspired):**
+- Primary: `--color-terracotta` (#C65D3B), `--color-olive` (#5B7355), `--color-burgundy` (#722F37)
+- Neutrals: `--color-parchment` (#F5F0E8), `--color-cream` (#FDFBF7), `--color-warm-white` (#FFFDF9)
+- Earth tones: `--color-earth-100` through `--color-earth-800`
+- Accents: `--color-gold` (#C4A35A)
 
-### Select Dropdowns (Important Styling Note)
-All `<select>` elements have custom styling in `styles-v2.css`:
-- Browser default arrow is hidden with `-webkit-appearance: none; -moz-appearance: none; appearance: none;`
-- Custom SVG arrow added via background-image
-- Do not add additional CSS arrows to select elements
+**Typography:**
+- Display: `Cormorant Garamond` (serif)
+- Body: `Source Sans 3` (sans-serif)
 
-### Game Data Structure
-Game-specific data is hardcoded in JavaScript arrays within each HTML file:
-- **Wordle**: `facileWords`, `medioWords`, `difficileWords` arrays (5-letter Italian words)
-- **Memory**: `topics` object with word pairs (Italian/English) for food, daily activities, family, school, work
-- **Tenses/Reflexives**: Verb arrays and conjugation data in inline scripts
-- **Crosswords**: Grid layout and clues defined in JavaScript
+**Spacing:** `--spacing-xs` (0.25rem) through `--spacing-4xl` (6rem)
 
-### Mobile-Specific Considerations
-- Navigation bar: 30px padding on mobile (`var(--spacing-xl)`)
-- Z-index stacking: Mobile menu uses `--z-mobile-menu: 50` to appear above all content
-- Hamburger menu: `.menu-items.show-menu` triggers dropdown visibility
-- All interactive elements: Minimum 44px touch targets
-- Input/select font-size: 16px minimum to prevent iOS auto-zoom
-- Memory cards: Smaller grid (70px minimum) on mobile with tighter spacing (5px gap)
+### File Structure
+
+**HTML Pages** (each standalone with embedded JS):
+- `index.html` - Landing page with game descriptions (includes EN/IT translation toggle)
+- `wordle.html` - Italian Wordle with difficulty levels
+- `memory.html` - Vocabulary matching game
+- `tenses.html` - Verb tense wheel spinner
+- `reflexives.html` - Reflexive verbs wheel spinner
+- `fiore.html` - Hangman-style flower game
+- `crosswords.html` - Italian crossword puzzles
+
+**Assets:**
+- `images/logo.png` - Site logo (speech bubble with Italian flag + "Impariamo l'Italiano!")
+- `images/favicon-*.png` - Favicon in multiple sizes (16, 32, 48, 64, 128, 180, 192, 512)
+- `images/apple-touch-icon.png` - iOS home screen icon
+- `favicon.ico` - Multi-size ICO file in root
+- `flower/` - Flower images (flower0-8.jpg) for fiore game
+
+### Common Patterns
+
+**Page Structure:**
+```html
+<header>
+  <img src="images/logo.png" alt="Impariamo l'Italiano!" class="logo">
+  <h1>Impariamo l'Italiano!</h1>
+</header>
+<nav><!-- Navigation with hamburger menu for mobile --></nav>
+<main class="container"><!-- Content --></main>
+<footer><!-- CC BY-NC-SA 4.0 license --></footer>
+```
+
+**CSS & Favicon Linking:**
+```html
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles-v3.css">
+<link rel="stylesheet" href="css/games-v3.css">
+```
+
+**Navigation:** Duplicated in every HTML file. When adding/removing pages, update ALL files.
+
+### Game Data
+
+Game word lists and data are hardcoded in inline `<script>` tags within each HTML file:
+- Wordle: `facileWords`, `medioWords`, `difficileWords` arrays
+- Memory: `topics` object with Italian/English word pairs
+- Tenses/Reflexives: Verb arrays with conjugation data
+
+### Homepage Translation Feature
+
+Tool cards on index.html have EN/IT translation toggle:
+- Button with class `translate-btn` in each `.tool` div
+- Overlay with class `translation-overlay` contains English text
+- `toggleTranslation(btn)` function handles toggle
+
+### Mobile Considerations
+
+- Breakpoint: 600px for mobile layout
+- Hamburger menu: `.menu-items.show-menu` class toggles visibility
+- Input font-size: 16px minimum to prevent iOS auto-zoom
+- Touch targets: 44px minimum

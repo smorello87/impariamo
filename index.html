@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Impariamo l'Italiano! - Home</title>
-  <link rel="stylesheet" href="css/styles-v2.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/styles-v3.css">
+  <link rel="stylesheet" href="css/games-v3.css">
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJL9EQGT3Y"></script>
 <script>
@@ -17,6 +22,7 @@
 </head>
 <body>
   <header>
+    <img src="images/logo.png" alt="Impariamo l'Italiano!" class="logo">
     <h1>Impariamo l'Italiano!</h1>
   </header>
   <nav>
@@ -40,33 +46,66 @@
       const menu = document.querySelector('nav .menu-items');
       menu.classList.toggle('show-menu');
     }
+
+    function toggleTranslation(btn) {
+      const tool = btn.closest('.tool');
+      const overlay = tool.querySelector('.translation-overlay');
+
+      btn.classList.toggle('active');
+      overlay.classList.toggle('visible');
+
+      // Update button text
+      if (btn.classList.contains('active')) {
+        btn.textContent = 'IT';
+        btn.title = 'Mostra descrizione in italiano';
+      } else {
+        btn.textContent = 'EN';
+        btn.title = 'Show English translation';
+      }
+    }
   </script>
   <main class="container">
       <h2>Benvenuti su Impariamo l'Italiano!</h2>
 <p><strong>Impariamo l'Italiano</strong> è una raccolta di strumenti interattivi pensati per l'insegnamento della lingua italiana in modo divertente ed efficace, adatta a corsi di scuola superiore e universitari.</p>
 
 <div class="tool">
+  <button class="translate-btn" onclick="toggleTranslation(this)" title="Show English translation">EN</button>
   <p><a href="tenses.html">Spin the Wheel (Tempi Verbali)</a> e <a href="reflexives.html">Spin the Wheel (Verbi Riflessivi)</a> sono giochi interattivi per esercitarsi con la coniugazione dei verbi. Seleziona un tempo verbale e lascia che la ruota scelga casualmente un verbo e un soggetto: chiedi poi agli studenti di fornire la coniugazione corretta.</p>
+  <div class="translation-overlay">
+    <p><a href="tenses.html">Spin the Wheel (Verb Tenses)</a> and <a href="reflexives.html">Spin the Wheel (Reflexive Verbs)</a> are interactive games to practice verb conjugation. Select a verb tense and let the wheel randomly choose a verb and subject: then ask students to provide the correct conjugation.</p>
+  </div>
 </div>
 
 <div class="tool">
+  <button class="translate-btn" onclick="toggleTranslation(this)" title="Show English translation">EN</button>
   <p><a href="memory.html">Memory Game</a> aiuta a rafforzare il vocabolario abbinando parole in italiano con le loro traduzioni in inglese.</p>
+  <div class="translation-overlay">
+    <p><a href="memory.html">Memory Game</a> helps reinforce vocabulary by matching Italian words with their English translations.</p>
+  </div>
 </div>
 
 <div class="tool">
+  <button class="translate-btn" onclick="toggleTranslation(this)" title="Show English translation">EN</button>
   <p><a href="wordle.html">Wordle</a> sfida gli studenti a indovinare una parola segreta in sei tentativi. Dopo ogni tentativo, riceveranno un feedback: lettere corrette nella posizione sbagliata saranno evidenziate in giallo, mentre quelle corrette e nella posizione giusta saranno in verde.</p>
+  <div class="translation-overlay">
+    <p><a href="wordle.html">Wordle</a> challenges students to guess a secret word in six attempts. After each guess, they receive feedback: correct letters in the wrong position are highlighted in yellow, while correct letters in the right position are shown in green.</p>
+  </div>
 </div>
 
 <div class="tool">
+  <button class="translate-btn" onclick="toggleTranslation(this)" title="Show English translation">EN</button>
   <p><a href="fiore.html">Fiore che sboccia</a> invita gli studenti a trovare la parola nascosta, guardando il fiore sbocciare prima di esaurire i tentativi!</p>
+  <div class="translation-overlay">
+    <p><a href="fiore.html">Blooming Flower</a> invites students to find the hidden word, watching the flower bloom before running out of attempts!</p>
+  </div>
 </div>
 
 <div class="tool">
+  <button class="translate-btn" onclick="toggleTranslation(this)" title="Show English translation">EN</button>
   <p><a href="crosswords.html">Crosswords</a> offre cruciverba tematici per praticare il vocabolario italiano in modo divertente e coinvolgente.</p>
-</div>
-
-<div class="tool">
-  <p><a href="deep.html">Deep Learning Suite</a> fornisce strumenti avanzati per l'apprendimento approfondito, inclusi flashcards, coniugazioni verbali, esercizi di ascolto e controllo grammaticale.</p>
+  <div class="translation-overlay">
+    <p><a href="crosswords.html">Crosswords</a> offers themed crossword puzzles to practice Italian vocabulary in a fun and engaging way.</p>
+  </div>
 </div>
 
 <p><strong>Impariamo l'Italiano</strong> è una suite in continua espansione: torna spesso a trovarci per scoprire nuovi aggiornamenti!</p>
