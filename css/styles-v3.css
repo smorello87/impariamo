@@ -811,6 +811,35 @@ input + button {
   margin-left: 4px;
 }
 
+/* Global translate all button - hidden on desktop, shown on mobile */
+.translate-all-btn {
+  display: none;
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  background: var(--color-olive);
+  color: var(--color-warm-white);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.translate-all-btn:hover {
+  background: var(--color-olive-dark);
+}
+
+.translate-all-btn.active {
+  background: var(--color-terracotta);
+}
+
+.translate-all-btn.active:hover {
+  background: var(--color-terracotta-dark);
+}
+
 /* ===========================
    Utility Classes
    =========================== */
@@ -905,16 +934,15 @@ input + button {
 }
 
 @media (max-width: 600px) {
-  /* Mobile logo - use stacked version */
+  /* Mobile logo - constrain width */
   header .logo {
-    display: none;
+    max-width: 90%;
+    max-height: none;
+    height: auto;
   }
 
   header .logo-mobile {
-    display: block;
-    max-height: 80px;
-    width: auto;
-    margin: 0 auto;
+    display: none;
   }
 
   /* h2 underline spacing fix */
@@ -1009,15 +1037,18 @@ input + button {
     font-size: 16px; /* Prevents iOS zoom */
   }
 
-  /* Tool cards - fix translate button overlap */
+  /* Tool cards - hide per-card EN buttons on mobile */
   .tool {
     padding: var(--spacing-md);
-    padding-top: calc(var(--spacing-md) + 32px);
   }
 
   .tool .translate-btn {
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
+    display: none;
+  }
+
+  /* Show global translate button on mobile */
+  .translate-all-btn {
+    display: block;
   }
 
   .tool:hover {

@@ -64,10 +64,37 @@
         btn.title = 'Show English translation';
       }
     }
+
+    function toggleAllTranslations(btn) {
+      const tools = document.querySelectorAll('.tool');
+      const isActive = btn.classList.toggle('active');
+
+      tools.forEach(tool => {
+        const overlay = tool.querySelector('.translation-overlay');
+        const perCardBtn = tool.querySelector('.translate-btn');
+        if (isActive) {
+          overlay.classList.add('visible');
+          if (perCardBtn) {
+            perCardBtn.classList.add('active');
+            perCardBtn.textContent = 'IT';
+          }
+        } else {
+          overlay.classList.remove('visible');
+          if (perCardBtn) {
+            perCardBtn.classList.remove('active');
+            perCardBtn.textContent = 'EN';
+          }
+        }
+      });
+
+      btn.textContent = isActive ? 'Italiano' : 'English';
+    }
   </script>
   <main class="container">
       <h2>Benvenuti su Impariamo l'Italiano!</h2>
 <p><strong>Impariamo l'Italiano</strong> è una raccolta di strumenti interattivi pensati per l'insegnamento della lingua italiana in modo divertente ed efficace, adatta a corsi di scuola superiore e universitari.</p>
+
+<button class="translate-all-btn" onclick="toggleAllTranslations(this)">English</button>
 
 <div class="tool">
   <button class="translate-btn" onclick="toggleTranslation(this)" title="Show English translation">EN</button>
