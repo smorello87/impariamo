@@ -249,6 +249,10 @@ header .logo {
   margin: 0 auto;
 }
 
+header .logo-mobile {
+  display: none;
+}
+
 /* Hide h1 when logo contains the title */
 header h1 {
   position: absolute;
@@ -901,9 +905,16 @@ input + button {
 }
 
 @media (max-width: 600px) {
-  /* Mobile logo - smaller size */
+  /* Mobile logo - use stacked version */
   header .logo {
-    max-height: 60px;
+    display: none;
+  }
+
+  header .logo-mobile {
+    display: block;
+    max-height: 80px;
+    width: auto;
+    margin: 0 auto;
   }
 
   /* h2 underline spacing fix */
